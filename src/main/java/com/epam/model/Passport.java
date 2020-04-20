@@ -15,7 +15,7 @@ public class Passport {
     public static final String DELETE = "Passport.delete";
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
 
     @Column(name = "passport_number", unique = true)
@@ -35,7 +35,7 @@ public class Passport {
     @NotBlank
     private String surname;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     @NotNull
     private User user;

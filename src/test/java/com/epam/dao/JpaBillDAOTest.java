@@ -3,6 +3,7 @@ package com.epam.dao;
 import com.epam.DatabaseSetupExtension;
 import com.epam.ModelUtilityClass;
 import com.epam.model.Bill;
+import com.epam.model.Car;
 import com.epam.model.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -11,16 +12,21 @@ import org.mockito.Mockito;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static com.epam.ModelUtilityClass.*;
+import static org.assertj.core.api.Assertions.entry;
 
 public class JpaBillDAOTest {
     private JpaBillDAO jpaBillDAO = new JpaBillDAO();
+    private JpaUserDAO jpaUserDAO = new JpaUserDAO();
+    private JpaCarDAO jpaCarDAO = new JpaCarDAO();
     private Bill bill;
     private User user;
+    private Car car;
 
     @RegisterExtension
     DatabaseSetupExtension databaseSetupExtension = new DatabaseSetupExtension();
@@ -28,8 +34,14 @@ public class JpaBillDAOTest {
     @BeforeEach
     public void setUp() {
         jpaBillDAO.setEntityManager(databaseSetupExtension.getEntityManager());
+        jpaUserDAO.setEntityManager(databaseSetupExtension.getEntityManager());
+        jpaCarDAO.setEntityManager(databaseSetupExtension.getEntityManager());
+
         user = createUser();
-        bill = createBill();
+        jpaUserDAO.save(user);
+        car = createCar();
+        jpaCarDAO.save(car);
+        bill = createBill(user, car);
     }
 
     @Test
@@ -43,7 +55,8 @@ public class JpaBillDAOTest {
     @Test
     public void getAll() {
         jpaBillDAO.save(bill);
-        Bill anotherBill = new Bill(LocalDate.now(), BigDecimal.valueOf(100), user);
+        jpaCarDAO.save(car);
+        Bill anotherBill = new Bill(LocalDate.now(), BigDecimal.valueOf(100), user, car);
         jpaBillDAO.save(anotherBill);
         List<Bill> bills = new ArrayList<>();
         bills.add(bill);

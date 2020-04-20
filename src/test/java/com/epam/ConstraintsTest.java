@@ -74,13 +74,14 @@ public class ConstraintsTest {
     @Test
     public void checkBillConstraintsViolation(){
         User mockUser = Mockito.mock(User.class);
+        Car mockCar = Mockito.mock(Car.class);
         LocalDate pastDate = LocalDate.now().minus(1, ChronoUnit.WEEKS);
         LocalDate futureDate = LocalDate.now().plusWeeks(1);
-        Set<ConstraintViolation<Bill>> violations = validator.validate(new Bill(null, null, null));
-        assertThat(violations.size()).isEqualTo(3);
-        violations = validator.validate(new Bill(futureDate, BigDecimal.valueOf(-10), mockUser));
+        Set<ConstraintViolation<Bill>> violations = validator.validate(new Bill(null, null, null, null));
+        assertThat(violations.size()).isEqualTo(4);
+        violations = validator.validate(new Bill(futureDate, BigDecimal.valueOf(-10), mockUser, mockCar));
         assertThat(violations.size()).isEqualTo(2);
-        violations = validator.validate(new Bill(pastDate, BigDecimal.valueOf(0), mockUser));
+        violations = validator.validate(new Bill(pastDate, BigDecimal.valueOf(0), mockUser, mockCar));
         assertThat(violations.size()).isEqualTo(0);
     }
 }

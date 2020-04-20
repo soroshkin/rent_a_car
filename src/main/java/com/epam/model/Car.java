@@ -19,7 +19,7 @@ public class Car {
     public static final String DELETE = "Car.delete";
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
 
     @NotBlank
@@ -36,6 +36,9 @@ public class Car {
 
     @ManyToMany(mappedBy = "tripsByCar")
     private Set<User> users;
+
+    @OneToMany(mappedBy = "car", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Bill> bills;
 
     protected Car() {
     }
@@ -64,6 +67,14 @@ public class Car {
 
     public LocalDate getProductionDate() {
         return productionDate;
+    }
+
+    public Set<Bill> getBills() {
+        return bills;
+    }
+
+    public boolean addBill(Bill bill) {
+        return bills.add(bill);
     }
 
     public boolean isNew() {

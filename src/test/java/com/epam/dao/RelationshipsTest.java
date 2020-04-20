@@ -13,6 +13,7 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static com.epam.ModelUtilityClass.*;
@@ -23,7 +24,7 @@ public class RelationshipsTest {
 
     private EntityManager entityManager;
     private User user = createUser();
-    private Passport passport = createPassport();
+    private Passport passport = createPassport(user);
 
     @BeforeEach
     public void setUp() {
@@ -32,7 +33,7 @@ public class RelationshipsTest {
     }
 
     @AfterEach
-    public void tearDown(){
+    public void tearDown() {
         entityManager.getTransaction().commit();
     }
 
@@ -42,18 +43,15 @@ public class RelationshipsTest {
         assertThat(entityManager.createNamedQuery(Account.GET_ALL, Account.class).getResultList().size()).isEqualTo(1);
     }
 
-//    @Test
-//    public void testMtoMRelationship() {
-//
-//    }
-
     @Test
     public void test_OtoM_relationship_user_passport() {
-        Bill bill = new Bill(LocalDate.now(), BigDecimal.valueOf(100), user);
+        entityManager.persist(user);
+        Car car = createCar();
+        entityManager.persist(car);
+        Bill bill = new Bill(LocalDate.now(), BigDecimal.valueOf(100), user, car);
         user.addPassport(passport);
         user.addBill(bill);
         entityManager.persist(bill);
-        entityManager.persist(user);
         assertThat(entityManager.createNamedQuery(Passport.GET_ALL, Passport.class).getResultList().size()).isEqualTo(1);
     }
 
@@ -74,8 +72,10 @@ public class RelationshipsTest {
     @Test
     public void test_MtM_Relationship_user_cars() {
         Car car = new Car("Tesla", LocalDate.of(1920, 1, 1), 1000);
+        entityManager.persist(car);
         user.addTripsByCar(car);
         user.addTripsByCar(car);
         entityManager.persist(user);
+        assertThat(entityManager.createNativeQuery("SELECT * FROM trips").getResultList().size()).isEqualTo(1);
     }
 }

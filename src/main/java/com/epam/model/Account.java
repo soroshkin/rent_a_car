@@ -22,7 +22,7 @@ public class Account {
     @Id
     private Long id;
 
-    @Column(name = "deposint_USD", scale = 2, precision = 12)
+    @Column(name = "deposit_USD", scale = 2, precision = 12)
     @NotNull
     private BigDecimal depositUSD;
 

@@ -6,7 +6,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 
-public class DatabaseSetupExtension implements BeforeAllCallback, BeforeEachCallback, AfterEachCallback {
+public class DatabaseSetupExtension implements BeforeEachCallback, AfterEachCallback {
     private EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory("test");
     private EntityManager entityManager;
 
@@ -15,17 +15,12 @@ public class DatabaseSetupExtension implements BeforeAllCallback, BeforeEachCall
     }
 
     @Override
-    public void beforeEach(ExtensionContext context) throws Exception {
+    public void beforeEach(ExtensionContext context){
         entityManager = entityManagerFactory.createEntityManager();
     }
 
     @Override
-    public void afterEach(ExtensionContext context) throws Exception {
+    public void afterEach(ExtensionContext context){
         entityManager.close();
-    }
-
-    @Override
-    public void beforeAll(ExtensionContext context) throws Exception {
-
     }
 }

@@ -18,7 +18,7 @@ public class Bill {
     public static final String DELETE = "Bill.delete";
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
 
     @PastOrPresent
@@ -30,18 +30,24 @@ public class Bill {
     @NotNull
     private BigDecimal amount;
 
-    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     @NotNull
     private User user;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "car_id")
+    @NotNull
+    private Car car;
+
     protected Bill() {
     }
 
-    public Bill(@PastOrPresent LocalDate date, @PositiveOrZero BigDecimal amount, User user) {
+    public Bill(@PastOrPresent LocalDate date, @PositiveOrZero BigDecimal amount, User user, Car car) {
         this.date = date;
         this.amount = amount;
         this.user = user;
+        this.car = car;
     }
 
     public Long getId() {

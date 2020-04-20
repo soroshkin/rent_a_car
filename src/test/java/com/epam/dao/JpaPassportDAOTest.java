@@ -15,8 +15,9 @@ import static com.epam.ModelUtilityClass.createPassport;
 import static com.epam.ModelUtilityClass.createUser;
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class JpaPassportDAOTest{
+public class JpaPassportDAOTest {
     private JpaPassportDAO jpaPassportDAO = new JpaPassportDAO();
+    private JpaUserDAO jpaUserDAO = new JpaUserDAO();
     private Passport passport;
     private User user;
 
@@ -26,8 +27,11 @@ public class JpaPassportDAOTest{
     @BeforeEach
     public void setEntityManager() {
         jpaPassportDAO.setEntityManager(databaseSetupExtension.getEntityManager());
-        passport = createPassport();
+        System.out.println(jpaPassportDAO.getAll());
+        jpaUserDAO.setEntityManager(databaseSetupExtension.getEntityManager());
         user = createUser();
+        jpaUserDAO.save(user);
+        passport = createPassport(user);
     }
 
     @Test
@@ -42,15 +46,16 @@ public class JpaPassportDAOTest{
     }
 
     @Test
-    public void get_passport(){
-        Passport mockPassport = Mockito.mock(Passport.class);
+    public void get_passport() {
         jpaPassportDAO.save(passport);
-        assertThat(jpaPassportDAO.get(1L).isPresent()).isTrue();
-        assertThat(jpaPassportDAO.get(1L).orElse(mockPassport)).isEqualTo(passport);
+        Passport mockPassport = Mockito.mock(Passport.class);
+        System.out.println(jpaPassportDAO.getAll());
+        assertThat(jpaPassportDAO.get(2L).isPresent()).isTrue();
+        assertThat(jpaPassportDAO.get(2L).orElse(mockPassport)).isEqualTo(passport);
     }
 
     @Test
-    public void getAll_passports(){
+    public void getAll_passports() {
         String stringParameter = "some parameter";
         Passport passport = new Passport("1", stringParameter, stringParameter, stringParameter, user);
         Passport anotherPassport = new Passport("2", stringParameter, stringParameter, stringParameter, user);
