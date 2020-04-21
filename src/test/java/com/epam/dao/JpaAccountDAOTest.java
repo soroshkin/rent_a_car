@@ -12,7 +12,6 @@ import javax.persistence.EntityExistsException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.epam.ModelUtilityClass.createAccount;
 import static com.epam.ModelUtilityClass.createUser;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -30,13 +29,12 @@ public class JpaAccountDAOTest {
     public void setUp() {
         jpaAccountDAO.setEntityManager(databaseSetupExtension.getEntityManager());
         jpaUserDAO.setEntityManager(databaseSetupExtension.getEntityManager());
-        account = jpaUserDAO.save(createUser()).getAccount();
         user = createUser();
+        account = jpaUserDAO.save(user).getAccount();
     }
 
     @Test
     public void get() {
-
         jpaAccountDAO.save(account);
         Account mockAccount = Mockito.mock(Account.class);
         assertThat(jpaAccountDAO.get(account.getId())).isPresent();
@@ -47,7 +45,10 @@ public class JpaAccountDAOTest {
     public void getAll() {
         List<Account> accounts = new ArrayList<>();
         accounts.add(account);
-        accounts.add(jpaUserDAO.save(createUser()).getAccount());
+        User anotherUser = createUser();
+        Account anotherAccount = anotherUser.getAccount();
+        accounts.add(anotherAccount);
+        jpaAccountDAO.save(anotherAccount);
         assertThat(jpaAccountDAO.getAll()).isEqualTo(accounts);
     }
 

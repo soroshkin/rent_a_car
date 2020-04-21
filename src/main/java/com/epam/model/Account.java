@@ -54,6 +54,10 @@ public class Account {
         return depositUSD;
     }
 
+    public void setUser(User user) {
+        this.user = user;
+    }
+
     public void setDepositUSD(BigDecimal depositUSD) {
         this.depositUSD = depositUSD;
     }

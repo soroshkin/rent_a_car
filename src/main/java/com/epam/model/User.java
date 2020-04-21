@@ -20,7 +20,7 @@ public class User {
     public static final String DELETE = "User.delete";
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
     @Column(name = "email")
@@ -55,10 +55,10 @@ public class User {
     public User(String email, LocalDate dateOfBirth) {
         this.email = email;
         this.dateOfBirth = dateOfBirth;
-        this.account = new Account(this);
         this.bills = new HashSet<>();
         this.passports = new HashSet<>();
         this.tripsByCar = new HashSet<>();
+        this.account = new Account(this);
     }
 
     public Long getId() {
@@ -67,6 +67,10 @@ public class User {
 
     public Account getAccount() {
         return account;
+    }
+
+    public void setAccount(Account account) {
+        this.account = account;
     }
 
     public Set<Bill> getBills() {

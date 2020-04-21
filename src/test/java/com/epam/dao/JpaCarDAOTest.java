@@ -1,22 +1,25 @@
 package com.epam.dao;
 
 import com.epam.DatabaseSetupExtension;
+import com.epam.model.Bill;
 import com.epam.model.Car;
-import org.junit.jupiter.api.BeforeAll;
+import com.epam.model.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.mockito.Mockito;
 
+import javax.persistence.PersistenceException;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.epam.ModelUtilityClass.createCar;
+import static com.epam.ModelUtilityClass.*;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
-public class JpaCarDAOTest{
+public class JpaCarDAOTest {
     private JpaCarDAO jpaCarDAO = new JpaCarDAO();
     private Car car;
 
@@ -35,10 +38,25 @@ public class JpaCarDAOTest{
     }
 
     @Test
+    public void deleteCarIfHasBills() {
+        JpaBillDAO jpaBillDAO = new JpaBillDAO();
+        jpaBillDAO.setEntityManager(databaseSetupExtension.getEntityManager());
+        JpaUserDAO jpaUserDAO = new JpaUserDAO();
+        jpaUserDAO.setEntityManager(databaseSetupExtension.getEntityManager());
+        jpaCarDAO.save(car);
+        User user = createUser();
+        jpaUserDAO.save(user);
+        Bill bill = createBill(user, car);
+        jpaBillDAO.save(bill);
+        assertThatExceptionOfType(PersistenceException.class).isThrownBy(() -> jpaCarDAO.delete(car.getId()));
+    }
+
+    @Test
     public void deleteCar() {
         jpaCarDAO.save(car);
         assertThat(jpaCarDAO.delete(car.getId())).isTrue();
     }
+
 
     @Test
     public void getCar() {

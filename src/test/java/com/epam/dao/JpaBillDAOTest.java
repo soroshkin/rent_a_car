@@ -1,7 +1,6 @@
 package com.epam.dao;
 
 import com.epam.DatabaseSetupExtension;
-import com.epam.ModelUtilityClass;
 import com.epam.model.Bill;
 import com.epam.model.Car;
 import com.epam.model.User;
@@ -12,13 +11,11 @@ import org.mockito.Mockito;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static com.epam.ModelUtilityClass.*;
-import static org.assertj.core.api.Assertions.entry;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class JpaBillDAOTest {
     private JpaBillDAO jpaBillDAO = new JpaBillDAO();
