@@ -50,12 +50,12 @@ public class Account {
         this.user = user;
     }
 
-    public BigDecimal getDepositUSD() {
-        return depositUSD;
-    }
-
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public BigDecimal getDepositUSD() {
+        return depositUSD;
     }
 
     public void setDepositUSD(BigDecimal depositUSD) {

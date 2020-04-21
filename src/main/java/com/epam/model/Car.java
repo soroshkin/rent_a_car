@@ -69,12 +69,20 @@ public class Car {
         return productionDate;
     }
 
+    public void setProductionDate(LocalDate productionDate) {
+        this.productionDate = productionDate;
+    }
+
     public Set<Bill> getBills() {
         return bills;
     }
 
     public boolean addBill(Bill bill) {
         return bills.add(bill);
+    }
+
+    public boolean removeBill(Bill bill) {
+        return bills.remove(bill);
     }
 
     public boolean isNew() {
