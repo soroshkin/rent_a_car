@@ -13,10 +13,9 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.List;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static com.epam.ModelUtilityClass.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class RelationshipsTest {
     @RegisterExtension
@@ -48,7 +47,7 @@ public class RelationshipsTest {
         entityManager.persist(user);
         Car car = createCar();
         entityManager.persist(car);
-        Bill bill = new Bill(LocalDate.now(), BigDecimal.valueOf(100), user, car);
+        Bill bill = new Bill(LocalDate.now(), BigDecimal.valueOf(100), user);
         user.addPassport(passport);
         user.addBill(bill);
         entityManager.persist(bill);
@@ -71,7 +70,7 @@ public class RelationshipsTest {
 
     @Test
     public void test_MtM_Relationship_user_cars() {
-        Car car = new Car("Tesla", LocalDate.of(1920, 1, 1), 1000);
+        Car car = new Car("Tesla", "A343", LocalDate.of(1920, 1, 1), 1000);
         entityManager.persist(car);
         user.addTripsByCar(car);
         user.addTripsByCar(car);

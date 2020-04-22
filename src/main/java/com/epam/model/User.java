@@ -7,6 +7,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Past;
 import java.time.LocalDate;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 @Entity
@@ -20,10 +21,10 @@ public class User {
     public static final String DELETE = "User.delete";
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
 
-    @Column(name = "email")
+    @Column(name = "email", unique = true)
     @Email
     @NotNull
     @NotBlank
@@ -38,16 +39,16 @@ public class User {
     private Account account;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<Passport> passports;
+    private Set<Passport> passports = new HashSet<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<Bill> bills;
+    private Set<Bill> bills = new HashSet<>();
 
     @ManyToMany
     @JoinTable(name = "trips",
             joinColumns = {@JoinColumn(name = "user_id")},
             inverseJoinColumns = @JoinColumn(name = "cars_id"))
-    private Set<Car> tripsByCar;
+    private Set<Car> tripsByCar = new HashSet<>();
 
     protected User() {
     }
@@ -55,9 +56,6 @@ public class User {
     public User(String email, LocalDate dateOfBirth) {
         this.email = email;
         this.dateOfBirth = dateOfBirth;
-        this.bills = new HashSet<>();
-        this.passports = new HashSet<>();
-        this.tripsByCar = new HashSet<>();
         this.account = new Account(this);
     }
 
@@ -129,6 +127,19 @@ public class User {
 
     public boolean isNew() {
         return id == null;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        User user = (User) o;
+        return email.equals(user.email);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(email);
     }
 
     @Override

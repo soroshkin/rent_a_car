@@ -31,22 +31,26 @@ public class JpaPassportDAOTest {
         jpaUserDAO.setEntityManager(databaseSetupExtension.getEntityManager());
         user = createUser();
         jpaUserDAO.save(user);
-        passport = createPassport(user);
     }
 
     @Test
     public void save_passport_test() {
+        passport = createPassport(user);
         assertThat(jpaPassportDAO.save(passport)).isSameAs(passport);
     }
 
     @Test
     public void delete_passport() {
+        passport = createPassport(user);
+        user.removePassport(passport);
+        jpaUserDAO.save(user);
         jpaPassportDAO.save(passport);
         assertThat(jpaPassportDAO.delete(passport.getId())).isTrue();
     }
 
     @Test
     public void get_passport() {
+        passport = createPassport(user);
         jpaPassportDAO.save(passport);
         Passport mockPassport = Mockito.mock(Passport.class);
         System.out.println(jpaPassportDAO.getAll());

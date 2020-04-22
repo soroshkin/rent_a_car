@@ -45,7 +45,7 @@ public class JpaAccountDAOTest {
     public void getAll() {
         List<Account> accounts = new ArrayList<>();
         accounts.add(account);
-        User anotherUser = createUser();
+        User anotherUser = createUser("another@email.com");
         Account anotherAccount = anotherUser.getAccount();
         accounts.add(anotherAccount);
         jpaAccountDAO.save(anotherAccount);

@@ -38,7 +38,7 @@ public class JpaBillDAOTest {
         jpaUserDAO.save(user);
         car = createCar();
         jpaCarDAO.save(car);
-        bill = createBill(user, car);
+        bill = createBill(user);
     }
 
     @Test
@@ -53,7 +53,7 @@ public class JpaBillDAOTest {
     public void getAll() {
         jpaBillDAO.save(bill);
         jpaCarDAO.save(car);
-        Bill anotherBill = new Bill(LocalDate.now(), BigDecimal.valueOf(100), user, car);
+        Bill anotherBill = new Bill(LocalDate.now(), BigDecimal.valueOf(100), user);
         jpaBillDAO.save(anotherBill);
         List<Bill> bills = new ArrayList<>();
         bills.add(bill);

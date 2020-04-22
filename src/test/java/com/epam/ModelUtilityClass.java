@@ -10,23 +10,27 @@ public class ModelUtilityClass {
     private static final LocalDate PAST_DATE = LocalDate.now().minus(1, ChronoUnit.YEARS);
     private static final BigDecimal AMOUNT = BigDecimal.valueOf(100);
 
-    public static User createUser(){
+    public static User createUser() {
         return new User("email@domain.com", PAST_DATE);
     }
 
-    public static Passport createPassport(User user){
+    public static User createUser(String email) {
+        return new User(email, PAST_DATE);
+    }
+
+    public static Passport createPassport(User user) {
         return new Passport("AB12345", "some address", "Semen", "Krotov", user);
     }
 
-    public static Bill createBill(User user, Car car){
-        return new Bill(PAST_DATE, AMOUNT, user, car);
+    public static Bill createBill(User user) {
+        return new Bill(PAST_DATE, AMOUNT, user);
     }
 
-    public static Car createCar(){
-        return new Car("ZAZ", PAST_DATE, 100);
+    public static Car createCar() {
+        return new Car("ZAZ", "A565BB", PAST_DATE, 100);
     }
 
-    public static Account createAccount(User user){
+    public static Account createAccount(User user) {
         return new Account(user);
     }
 }

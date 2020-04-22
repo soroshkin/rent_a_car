@@ -6,6 +6,7 @@ import javax.validation.constraints.PastOrPresent;
 import javax.validation.constraints.PositiveOrZero;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Objects;
 
 @Entity
 @Table(name = "bills")
@@ -37,17 +38,21 @@ public class Bill {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "car_id")
-    @NotNull
     private Car car;
 
     protected Bill() {
     }
 
-    public Bill(@PastOrPresent LocalDate date, @PositiveOrZero BigDecimal amount, User user, Car car) {
+    public Bill(@PastOrPresent @NotNull LocalDate date, @PositiveOrZero @NotNull BigDecimal amount, @NotNull User user) {
         this.date = date;
         this.amount = amount;
-        this.user = user;
-        this.car = car;
+        this.user = Objects.requireNonNull(user, "user must not be null");
+        this.user.addBill(this);
+    }
+
+    @PreRemove
+    public void deleteCar() {
+        car.removeBill(this);
     }
 
     public Long getId() {
@@ -88,6 +93,22 @@ public class Bill {
 
     public boolean isNew() {
         return id == null;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Bill bill = (Bill) o;
+        return date.equals(bill.date) &&
+                amount.equals(bill.amount) &&
+                user.equals(bill.user) &&
+                car.equals(bill.car);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(date, amount, user, car);
     }
 
     @Override

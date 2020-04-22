@@ -46,7 +46,8 @@ public class JpaCarDAOTest {
         jpaCarDAO.save(car);
         User user = createUser();
         jpaUserDAO.save(user);
-        Bill bill = createBill(user, car);
+        Bill bill = createBill(user);
+        bill.setCar(car);
         jpaBillDAO.save(bill);
         assertThatExceptionOfType(PersistenceException.class).isThrownBy(() -> jpaCarDAO.delete(car.getId()));
     }
@@ -70,8 +71,8 @@ public class JpaCarDAOTest {
     public void getAllCars() {
         String model = "Ferrari";
         LocalDate productionDate = LocalDate.now().minus(1, ChronoUnit.YEARS);
-        Car car = new Car(model, productionDate, 10000);
-        Car anotherCar = new Car(model, productionDate, 1333);
+        Car car = new Car(model, "A232", productionDate, 10000);
+        Car anotherCar = new Car(model, "D999", productionDate, 1333);
         List<Car> cars = new ArrayList<>();
         cars.add(car);
         cars.add(anotherCar);

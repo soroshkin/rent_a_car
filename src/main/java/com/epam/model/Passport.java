@@ -3,6 +3,7 @@ package com.epam.model;
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.util.Objects;
 
 @Entity
 @Table(name = "passports")
@@ -79,12 +80,13 @@ public class Passport {
     protected Passport() {
     }
 
-    public Passport(String passportNumber, String address, String name, String surname, User user) {
+    public Passport(@NotNull @NotBlank String passportNumber, @NotNull @NotBlank String address, @NotNull @NotBlank String name, @NotNull @NotBlank String surname, @NotNull User user) {
         this.passportNumber = passportNumber;
         this.address = address;
         this.name = name;
         this.surname = surname;
-        this.user = user;
+        this.user = Objects.requireNonNull(user, "user must not be null");
+        this.user.addPassport(this);
     }
 
     public void setUser(User user) {
@@ -93,6 +95,19 @@ public class Passport {
 
     public boolean isNew() {
         return this.id == null;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Passport passport = (Passport) o;
+        return passportNumber.equals(passport.passportNumber);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(passportNumber);
     }
 
     @Override

@@ -13,7 +13,7 @@ import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.Set;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class ConstraintsTest {
 
@@ -26,12 +26,14 @@ public class ConstraintsTest {
 
     @Test
     public void checkPassportConstraintsViolation() {
-        User user = new User("batman@mail.ru", LocalDate.of(1988, 1, 9));
-        Set<ConstraintViolation<Passport>> violations = validator.validate(new Passport(null, null, null, null, null));
-        assertThat(violations.size()).isEqualTo(9);
-        violations = validator.validate(new Passport("", "", "", "", null));
-        assertThat(violations.size()).isEqualTo(5);
-        violations = validator.validate(new Passport("1", "1", "1", "1", user));
+        User mockUser = Mockito.mock(User.class);
+        Set<ConstraintViolation<Passport>> violations = validator.validate(new Passport(null, null, null, null, mockUser));
+        assertThat(violations.size()).isEqualTo(8);
+        violations = validator.validate(new Passport("", "", "", "", mockUser));
+        assertThat(violations.size()).isEqualTo(4);
+        Passport passport = new Passport("1", "1", "1", "1", mockUser);
+        passport.setUser(Mockito.mock(User.class));
+        violations = validator.validate(passport);
         assertThat(violations.isEmpty()).isTrue();
     }
 
@@ -49,18 +51,18 @@ public class ConstraintsTest {
 
     @Test
     public void checkCarConstraintsViolation() {
-        Set<ConstraintViolation<Car>> violations = validator.validate(new Car(null, null, -1));
+        Set<ConstraintViolation<Car>> violations = validator.validate(new Car(null, null, null, -1));
+        assertThat(violations.size()).isEqualTo(6);
+        violations = validator.validate(new Car("", null, LocalDate.now().plusWeeks(10), 10));
         assertThat(violations.size()).isEqualTo(4);
-        violations = validator.validate(new Car("", LocalDate.now().plusWeeks(10), 10));
-        assertThat(violations.size()).isEqualTo(2);
-        violations = validator.validate(new Car("some model", LocalDate.now(), 10));
+        violations = validator.validate(new Car("some model", "H543", LocalDate.now(), 10));
         assertThat(violations.size()).isEqualTo(1);
-        violations = validator.validate(new Car("some model", LocalDate.now().minus(12, ChronoUnit.YEARS), 10));
+        violations = validator.validate(new Car("some model", "H543", LocalDate.now().minus(12, ChronoUnit.YEARS), 10));
         assertThat(violations.size()).isEqualTo(0);
     }
 
     @Test
-    public void checkAccountConstraintsViolation(){
+    public void checkAccountConstraintsViolation() {
         Set<ConstraintViolation<Account>> violations = validator.validate(new Account(null));
         assertThat(violations.size()).isEqualTo(1);
         User mockUser = Mockito.mock(User.class);
@@ -72,16 +74,21 @@ public class ConstraintsTest {
     }
 
     @Test
-    public void checkBillConstraintsViolation(){
+    public void checkBillConstraintsViolation() {
         User mockUser = Mockito.mock(User.class);
-        Car mockCar = Mockito.mock(Car.class);
         LocalDate pastDate = LocalDate.now().minus(1, ChronoUnit.WEEKS);
         LocalDate futureDate = LocalDate.now().plusWeeks(1);
-        Set<ConstraintViolation<Bill>> violations = validator.validate(new Bill(null, null, null, null));
-        assertThat(violations.size()).isEqualTo(4);
-        violations = validator.validate(new Bill(futureDate, BigDecimal.valueOf(-10), mockUser, mockCar));
+        Set<ConstraintViolation<Bill>> violations = validator.validate(new Bill(null, null, mockUser));
         assertThat(violations.size()).isEqualTo(2);
-        violations = validator.validate(new Bill(pastDate, BigDecimal.valueOf(0), mockUser, mockCar));
+
+        Bill bill = new Bill(futureDate, BigDecimal.valueOf(-10), mockUser);
+        bill.setUser(Mockito.mock(User.class));
+        violations = validator.validate(bill);
+        assertThat(violations.size()).isEqualTo(2);
+
+        bill.setDate(pastDate);
+        bill.setAmount(BigDecimal.valueOf(10));
+        violations = validator.validate(bill);
         assertThat(violations.size()).isEqualTo(0);
     }
 }
