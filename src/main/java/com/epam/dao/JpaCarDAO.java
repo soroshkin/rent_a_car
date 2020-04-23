@@ -2,60 +2,39 @@ package com.epam.dao;
 
 import com.epam.model.Car;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityTransaction;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Function;
+
+import static com.epam.utils.EntityManagerUtil.executeInTransaction;
+import static com.epam.utils.EntityManagerUtil.executeOutsideTransaction;
 
 public class JpaCarDAO implements DAO<Car> {
-    private EntityManager entityManager;
-
-    public void setEntityManager(EntityManager entityManager) {
-        this.entityManager = entityManager;
-    }
-
     @Override
     public Optional<Car> get(Long id) {
-        return Optional.ofNullable(entityManager.find(Car.class, id));
+        return Optional.ofNullable(executeOutsideTransaction(entityManager -> entityManager.find(Car.class, id)));
     }
 
     @Override
     public List<Car> getAll() {
-        return entityManager.createNamedQuery(Car.GET_ALL, Car.class).getResultList();
+        return executeOutsideTransaction(entityManager -> entityManager.createNamedQuery(Car.GET_ALL, Car.class).getResultList());
     }
 
     @Override
     public Car save(Car car) {
-        return executeInTransaction(em -> {
+        return executeInTransaction(entityManager -> {
             if (car.isNew()) {
-                em.persist(car);
+                entityManager.persist(car);
                 return car;
             } else {
-                return em.merge(car);
+                return entityManager.merge(car);
             }
         });
     }
 
     @Override
     public boolean delete(Long id) {
-        return executeInTransaction(em -> em.createNamedQuery(Car.DELETE)
+        return executeInTransaction(entityManager -> entityManager.createNamedQuery(Car.DELETE)
                 .setParameter("id", id)
                 .executeUpdate() != 0);
-    }
-
-    private <R> R executeInTransaction(Function<EntityManager, R> function) {
-        EntityTransaction transaction = entityManager.getTransaction();
-        try {
-            transaction.begin();
-            return function.apply(entityManager);
-        } catch (RuntimeException e) {
-            transaction.rollback();
-            throw e;
-        } finally {
-            if (transaction.isActive()) {
-                transaction.commit();
-            }
-        }
     }
 }

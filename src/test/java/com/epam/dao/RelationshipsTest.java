@@ -1,6 +1,6 @@
 package com.epam.dao;
 
-import com.epam.DatabaseSetupExtension;
+import com.epam.AppSettings;
 import com.epam.model.*;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -8,6 +8,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
 import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.Persistence;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
@@ -18,16 +20,14 @@ import static com.epam.ModelUtilityClass.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class RelationshipsTest {
-    @RegisterExtension
-    DatabaseSetupExtension databaseSetupExtension = new DatabaseSetupExtension();
-
+    private EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory(AppSettings.PERSISTENCE_UNIT.getSettingValue());
     private EntityManager entityManager;
     private User user = createUser();
     private Passport passport = createPassport(user);
 
     @BeforeEach
     public void setUp() {
-        entityManager = databaseSetupExtension.getEntityManager();
+        entityManager = entityManagerFactory.createEntityManager();
         entityManager.getTransaction().begin();
     }
 
@@ -47,7 +47,7 @@ public class RelationshipsTest {
         entityManager.persist(user);
         Car car = createCar();
         entityManager.persist(car);
-        Bill bill = new Bill(LocalDate.now(), BigDecimal.valueOf(100), user);
+        Bill bill = new Bill(LocalDate.now(), BigDecimal.valueOf(100), user, car);
         user.addPassport(passport);
         user.addBill(bill);
         entityManager.persist(bill);

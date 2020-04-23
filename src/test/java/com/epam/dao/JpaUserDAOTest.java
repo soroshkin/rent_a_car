@@ -1,17 +1,17 @@
 package com.epam.dao;
 
-import com.epam.DatabaseSetupExtension;
-import com.epam.model.Bill;
+import com.epam.EntityManagerSetupExtension;
 import com.epam.model.Car;
-import com.epam.model.Passport;
 import com.epam.model.User;
+import com.epam.utils.EntityManagerUtil;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.mockito.Mockito;
 
 import javax.persistence.PersistenceException;
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -21,23 +21,20 @@ import static com.epam.ModelUtilityClass.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
+@ExtendWith(EntityManagerSetupExtension.class)
 public class JpaUserDAOTest {
     JpaUserDAO jpaUserDAO = new JpaUserDAO();
     private User user;
 
-    @RegisterExtension
-    DatabaseSetupExtension databaseSetupExtension = new DatabaseSetupExtension();
-
     @BeforeEach
-    public void setEntityManager() {
-        jpaUserDAO.setEntityManager(databaseSetupExtension.getEntityManager());
+    public void setUp() {
         user = createUser();
     }
 
     @Test
     public void save() {
         jpaUserDAO.save(user);
-        assertThat(jpaUserDAO.save(user)).isSameAs(user);
+        assertThat(jpaUserDAO.save(user)).isEqualTo(user);
     }
 
     @Test
@@ -50,9 +47,8 @@ public class JpaUserDAOTest {
     public void deleteIfHasBills() {
         Car car = createCar();
         JpaCarDAO jpaCarDAO = new JpaCarDAO();
-        jpaCarDAO.setEntityManager(databaseSetupExtension.getEntityManager());
         jpaCarDAO.save(car);
-        Bill bill = createBill(user);
+        createBill(user, car);
         jpaUserDAO.save(user);
         assertThatExceptionOfType(PersistenceException.class).isThrownBy(() -> jpaUserDAO.delete(user.getId()));
     }
@@ -70,29 +66,6 @@ public class JpaUserDAOTest {
         jpaUserDAO.save(user);
         assertThat(jpaUserDAO.get(user.getId()).isPresent()).isTrue();
         assertThat(jpaUserDAO.get(user.getId()).orElse(mockUser)).isEqualTo(user);
-//        Car car = createCar();
-//        JpaCarDAO jpaCarDAO = new JpaCarDAO();
-//        jpaCarDAO.setEntityManager(databaseSetupExtension.getEntityManager());
-////        Bill bill = createBill(user, car);
-//        JpaBillDAO jpaBillDAO = new JpaBillDAO();
-//        jpaBillDAO.setEntityManager(databaseSetupExtension.getEntityManager());
-//        Bill bill = new Bill(LocalDate.now(), BigDecimal.valueOf(2), user);
-//        jpaCarDAO.save(car);
-//        car.addBill(bill);
-////       user.addBill(bill);
-//        jpaBillDAO.save(bill);
-//        boolean containsCar = car.getBills().contains(bill);
-//        boolean contains =  user.getBills().contains(bill);
-//        System.out.println(contains);
-//        jpaUserDAO.save(user);
-//        user.removeBill(bill);
-//        Passport passport = new Passport("poeirpwo", "sdfs","we","wer");
-//        user.addPassport(passport);
-//        jpaUserDAO.save(user);
-//        user.removePassport(passport);
-//        jpaUserDAO.save(user);
-//        jpaUserDAO.delete(user.getId());
-//        System.out.println();
     }
 
     @Test

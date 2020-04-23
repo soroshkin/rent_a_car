@@ -1,12 +1,12 @@
 package com.epam.dao;
 
-import com.epam.DatabaseSetupExtension;
+import com.epam.EntityManagerSetupExtension;
 import com.epam.model.Bill;
 import com.epam.model.Car;
 import com.epam.model.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 
 import java.math.BigDecimal;
@@ -17,6 +17,7 @@ import java.util.List;
 import static com.epam.ModelUtilityClass.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
+@ExtendWith(EntityManagerSetupExtension.class)
 public class JpaBillDAOTest {
     private JpaBillDAO jpaBillDAO = new JpaBillDAO();
     private JpaUserDAO jpaUserDAO = new JpaUserDAO();
@@ -25,20 +26,13 @@ public class JpaBillDAOTest {
     private User user;
     private Car car;
 
-    @RegisterExtension
-    DatabaseSetupExtension databaseSetupExtension = new DatabaseSetupExtension();
-
     @BeforeEach
     public void setUp() {
-        jpaBillDAO.setEntityManager(databaseSetupExtension.getEntityManager());
-        jpaUserDAO.setEntityManager(databaseSetupExtension.getEntityManager());
-        jpaCarDAO.setEntityManager(databaseSetupExtension.getEntityManager());
-
         user = createUser();
         jpaUserDAO.save(user);
         car = createCar();
         jpaCarDAO.save(car);
-        bill = createBill(user);
+        bill = createBill(user, car);
     }
 
     @Test
@@ -46,19 +40,20 @@ public class JpaBillDAOTest {
         jpaBillDAO.save(bill);
         Bill mockBill = Mockito.mock(Bill.class);
         assertThat(jpaBillDAO.get(bill.getId())).isPresent();
-        assertThat(jpaBillDAO.get(bill.getId()).orElse(mockBill)).isEqualTo(bill);
+        assertThat(jpaBillDAO.get(bill.getId()).orElse(mockBill))
+                .isEqualToIgnoringGivenFields(bill, "car", "user");
     }
 
     @Test
     public void getAll() {
         jpaBillDAO.save(bill);
         jpaCarDAO.save(car);
-        Bill anotherBill = new Bill(LocalDate.now(), BigDecimal.valueOf(100), user);
+        Bill anotherBill = new Bill(LocalDate.now(), BigDecimal.valueOf(1.23), user, car);
         jpaBillDAO.save(anotherBill);
         List<Bill> bills = new ArrayList<>();
         bills.add(bill);
         bills.add(anotherBill);
-        assertThat(jpaBillDAO.getAll()).isEqualTo(bills);
+        assertThat(jpaBillDAO.getAll()).usingElementComparatorIgnoringFields("car", "user").isEqualTo(bills);
     }
 
     @Test

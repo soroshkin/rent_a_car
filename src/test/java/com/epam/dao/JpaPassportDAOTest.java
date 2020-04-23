@@ -1,11 +1,11 @@
 package com.epam.dao;
 
-import com.epam.DatabaseSetupExtension;
+import com.epam.EntityManagerSetupExtension;
 import com.epam.model.Passport;
 import com.epam.model.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 
 import java.util.ArrayList;
@@ -15,20 +15,15 @@ import static com.epam.ModelUtilityClass.createPassport;
 import static com.epam.ModelUtilityClass.createUser;
 import static org.assertj.core.api.Assertions.assertThat;
 
+@ExtendWith(EntityManagerSetupExtension.class)
 public class JpaPassportDAOTest {
     private JpaPassportDAO jpaPassportDAO = new JpaPassportDAO();
     private JpaUserDAO jpaUserDAO = new JpaUserDAO();
     private Passport passport;
     private User user;
 
-    @RegisterExtension
-    DatabaseSetupExtension databaseSetupExtension = new DatabaseSetupExtension();
-
     @BeforeEach
-    public void setEntityManager() {
-        jpaPassportDAO.setEntityManager(databaseSetupExtension.getEntityManager());
-        System.out.println(jpaPassportDAO.getAll());
-        jpaUserDAO.setEntityManager(databaseSetupExtension.getEntityManager());
+    public void setUp() {
         user = createUser();
         jpaUserDAO.save(user);
     }

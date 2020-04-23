@@ -38,16 +38,19 @@ public class Bill {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "car_id")
+    @NotNull
     private Car car;
 
     protected Bill() {
     }
 
-    public Bill(@PastOrPresent @NotNull LocalDate date, @PositiveOrZero @NotNull BigDecimal amount, @NotNull User user) {
+    public Bill(@PastOrPresent @NotNull LocalDate date, @PositiveOrZero @NotNull BigDecimal amount, @NotNull User user, @NotNull Car car) {
         this.date = date;
         this.amount = amount;
         this.user = Objects.requireNonNull(user, "user must not be null");
         this.user.addBill(this);
+        this.car = Objects.requireNonNull(car, "car must not be null");
+        this.car.addBill(this);
     }
 
     @PreRemove
@@ -101,7 +104,7 @@ public class Bill {
         if (o == null || getClass() != o.getClass()) return false;
         Bill bill = (Bill) o;
         return date.equals(bill.date) &&
-                amount.equals(bill.amount) &&
+                amount.compareTo(bill.amount) == 0 &&
                 user.equals(bill.user) &&
                 car.equals(bill.car);
     }
