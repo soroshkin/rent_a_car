@@ -2,13 +2,12 @@ package com.epam.dao;
 
 import com.epam.EntityManagerSetupExtension;
 import com.epam.model.Car;
+import com.epam.model.Passport;
 import com.epam.model.User;
 import com.epam.utils.EntityManagerUtil;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.api.extension.RegisterExtension;
 import org.mockito.Mockito;
 
 import javax.persistence.PersistenceException;
@@ -80,5 +79,19 @@ public class JpaUserDAOTest {
         jpaUserDAO.save(user);
         jpaUserDAO.save(anotherUser);
         assertThat(jpaUserDAO.getAll()).isEqualTo(users);
+    }
+
+    @Test
+    public void removeOrphanPassports() {
+        Passport passport = createPassport(user);
+        user.addPassport(passport);
+        jpaUserDAO.save(user);
+        user.removePassport(passport);
+        jpaUserDAO.save(user);
+        int passportsNumber = EntityManagerUtil.executeOutsideTransaction(entityManager -> entityManager
+                .createNamedQuery(Passport.GET_ALL)
+                .getResultList()
+                .size());
+        assertThat(passportsNumber).isEqualTo(0);
     }
 }

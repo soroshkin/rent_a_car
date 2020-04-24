@@ -29,22 +29,20 @@ public class JpaPassportDAOTest {
     }
 
     @Test
-    public void save_passport_test() {
+    public void savePassport() {
         passport = createPassport(user);
         assertThat(jpaPassportDAO.save(passport)).isSameAs(passport);
     }
 
     @Test
-    public void delete_passport() {
+    public void deletePassport() {
         passport = createPassport(user);
-        user.removePassport(passport);
-        jpaUserDAO.save(user);
         jpaPassportDAO.save(passport);
         assertThat(jpaPassportDAO.delete(passport.getId())).isTrue();
     }
 
     @Test
-    public void get_passport() {
+    public void getPassport() {
         passport = createPassport(user);
         jpaPassportDAO.save(passport);
         Passport mockPassport = Mockito.mock(Passport.class);
@@ -54,7 +52,7 @@ public class JpaPassportDAOTest {
     }
 
     @Test
-    public void getAll_passports() {
+    public void getAllPassports() {
         String stringParameter = "some parameter";
         Passport passport = new Passport("1", stringParameter, stringParameter, stringParameter, user);
         Passport anotherPassport = new Passport("2", stringParameter, stringParameter, stringParameter, user);

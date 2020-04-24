@@ -7,7 +7,6 @@ import com.epam.model.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.api.extension.RegisterExtension;
 import org.mockito.Mockito;
 
 import javax.persistence.PersistenceException;
@@ -38,7 +37,6 @@ public class JpaCarDAOTest {
     @Test
     public void deleteCarIfHasBills() {
         JpaBillDAO jpaBillDAO = new JpaBillDAO();
-
         JpaUserDAO jpaUserDAO = new JpaUserDAO();
         jpaCarDAO.save(car);
         User user = createUser();
