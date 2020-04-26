@@ -1,6 +1,10 @@
-package com.epam.dao;
+package com.epam.dao.jpa;
 
 import com.epam.EntityManagerSetupExtension;
+import com.epam.dao.PassportDAO;
+import com.epam.dao.UserDAO;
+import com.epam.dao.jpa.JpaPassportDAOImpl;
+import com.epam.dao.jpa.JpaUserDAOImpl;
 import com.epam.model.Passport;
 import com.epam.model.User;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,38 +21,38 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(EntityManagerSetupExtension.class)
 public class JpaPassportDAOTest {
-    private JpaPassportDAO jpaPassportDAO = new JpaPassportDAO();
-    private JpaUserDAO jpaUserDAO = new JpaUserDAO();
+    private PassportDAO passportDAO = new JpaPassportDAOImpl();
+    private UserDAO userDAO = new JpaUserDAOImpl();
     private Passport passport;
     private User user;
 
     @BeforeEach
     public void setUp() {
         user = createUser();
-        jpaUserDAO.save(user);
+        userDAO.save(user);
     }
 
     @Test
     public void savePassport() {
         passport = createPassport(user);
-        assertThat(jpaPassportDAO.save(passport)).isSameAs(passport);
+        assertThat(passportDAO.save(passport)).isSameAs(passport);
     }
 
     @Test
     public void deletePassport() {
         passport = createPassport(user);
-        jpaPassportDAO.save(passport);
-        assertThat(jpaPassportDAO.delete(passport.getId())).isTrue();
+        passportDAO.save(passport);
+        assertThat(passportDAO.delete(passport.getId())).isTrue();
     }
 
     @Test
     public void getPassport() {
         passport = createPassport(user);
-        jpaPassportDAO.save(passport);
+        passportDAO.save(passport);
         Passport mockPassport = Mockito.mock(Passport.class);
-        System.out.println(jpaPassportDAO.getAll());
-        assertThat(jpaPassportDAO.get(2L).isPresent()).isTrue();
-        assertThat(jpaPassportDAO.get(2L).orElse(mockPassport)).isEqualTo(passport);
+        System.out.println(passportDAO.getAll());
+        assertThat(passportDAO.get(2L).isPresent()).isTrue();
+        assertThat(passportDAO.get(2L).orElse(mockPassport)).isEqualTo(passport);
     }
 
     @Test
@@ -59,8 +63,8 @@ public class JpaPassportDAOTest {
         List<Passport> passports = new ArrayList<>();
         passports.add(passport);
         passports.add(anotherPassport);
-        jpaPassportDAO.save(passport);
-        jpaPassportDAO.save(anotherPassport);
-        assertThat(jpaPassportDAO.getAll()).isEqualTo(passports);
+        passportDAO.save(passport);
+        passportDAO.save(anotherPassport);
+        assertThat(passportDAO.getAll()).isEqualTo(passports);
     }
 }

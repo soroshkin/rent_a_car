@@ -1,6 +1,12 @@
-package com.epam.dao;
+package com.epam.dao.jpa;
 
 import com.epam.EntityManagerSetupExtension;
+import com.epam.dao.BillDAO;
+import com.epam.dao.CarDAO;
+import com.epam.dao.UserDAO;
+import com.epam.dao.jpa.JpaBillDAOImpl;
+import com.epam.dao.jpa.JpaCarDAOImpl;
+import com.epam.dao.jpa.JpaUserDAOImpl;
 import com.epam.model.Bill;
 import com.epam.model.Car;
 import com.epam.model.User;
@@ -21,7 +27,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 @ExtendWith(EntityManagerSetupExtension.class)
 public class JpaCarDAOTest {
-    private JpaCarDAO jpaCarDAO = new JpaCarDAO();
+    private CarDAO carDAO = new JpaCarDAOImpl();
     private Car car;
 
     @BeforeEach
@@ -31,34 +37,34 @@ public class JpaCarDAOTest {
 
     @Test
     public void saveCar() {
-        assertThat(jpaCarDAO.save(car)).isSameAs(car);
+        assertThat(carDAO.save(car)).isSameAs(car);
     }
 
     @Test
     public void deleteCarIfHasBills() {
-        JpaBillDAO jpaBillDAO = new JpaBillDAO();
-        JpaUserDAO jpaUserDAO = new JpaUserDAO();
-        jpaCarDAO.save(car);
+        BillDAO billDAO = new JpaBillDAOImpl();
+        UserDAO userDAO = new JpaUserDAOImpl();
+        carDAO.save(car);
         User user = createUser();
-        jpaUserDAO.save(user);
+        userDAO.save(user);
         Bill bill = createBill(user, car);
-        jpaBillDAO.save(bill);
-        assertThatExceptionOfType(PersistenceException.class).isThrownBy(() -> jpaCarDAO.delete(car.getId()));
+        billDAO.save(bill);
+        assertThatExceptionOfType(PersistenceException.class).isThrownBy(() -> carDAO.delete(car.getId()));
     }
 
     @Test
     public void deleteCar() {
-        jpaCarDAO.save(car);
-        assertThat(jpaCarDAO.delete(car.getId())).isTrue();
+        carDAO.save(car);
+        assertThat(carDAO.delete(car.getId())).isTrue();
     }
 
 
     @Test
     public void getCar() {
         Car mockCar = Mockito.mock(Car.class);
-        jpaCarDAO.save(car);
-        assertThat(jpaCarDAO.get(1L).isPresent()).isTrue();
-        assertThat(jpaCarDAO.get(1L).orElse(mockCar)).isEqualTo(car);
+        carDAO.save(car);
+        assertThat(carDAO.get(1L).isPresent()).isTrue();
+        assertThat(carDAO.get(1L).orElse(mockCar)).isEqualTo(car);
     }
 
     @Test
@@ -70,8 +76,8 @@ public class JpaCarDAOTest {
         List<Car> cars = new ArrayList<>();
         cars.add(car);
         cars.add(anotherCar);
-        jpaCarDAO.save(car);
-        jpaCarDAO.save(anotherCar);
-        assertThat(jpaCarDAO.getAll()).isEqualTo(cars);
+        carDAO.save(car);
+        carDAO.save(anotherCar);
+        assertThat(carDAO.getAll()).isEqualTo(cars);
     }
 }

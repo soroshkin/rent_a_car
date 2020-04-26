@@ -1,6 +1,10 @@
-package com.epam.dao;
+package com.epam.dao.jpa;
 
 import com.epam.EntityManagerSetupExtension;
+import com.epam.dao.CarDAO;
+import com.epam.dao.UserDAO;
+import com.epam.dao.jpa.JpaCarDAOImpl;
+import com.epam.dao.jpa.JpaUserDAOImpl;
 import com.epam.model.Car;
 import com.epam.model.Passport;
 import com.epam.model.User;
@@ -15,6 +19,7 @@ import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static com.epam.ModelUtilityClass.*;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -22,7 +27,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 @ExtendWith(EntityManagerSetupExtension.class)
 public class JpaUserDAOTest {
-    JpaUserDAO jpaUserDAO = new JpaUserDAO();
+    UserDAO userDAO = new JpaUserDAOImpl();
     private User user;
 
     @BeforeEach
@@ -32,39 +37,45 @@ public class JpaUserDAOTest {
 
     @Test
     public void save() {
-        jpaUserDAO.save(user);
-        assertThat(jpaUserDAO.save(user)).isEqualTo(user);
+        assertThat(userDAO.save(user)).isEqualTo(user);
+    }
+
+    @Test
+    public void getByEmail() {
+        userDAO.save(user);
+        User mockUser = Mockito.mock(User.class);
+        assertThat(userDAO.getByEmail(user.getEmail()).orElse(mockUser)).isEqualTo(user);
     }
 
     @Test
     public void deleteIfHasNoBillsPassports() {
-        jpaUserDAO.save(user);
-        assertThat(jpaUserDAO.delete(user.getId())).isTrue();
+        userDAO.save(user);
+        assertThat(userDAO.delete(user.getId())).isTrue();
     }
 
     @Test
     public void deleteIfHasBills() {
         Car car = createCar();
-        JpaCarDAO jpaCarDAO = new JpaCarDAO();
-        jpaCarDAO.save(car);
+        CarDAO carDAO = new JpaCarDAOImpl();
+        carDAO.save(car);
         createBill(user, car);
-        jpaUserDAO.save(user);
-        assertThatExceptionOfType(PersistenceException.class).isThrownBy(() -> jpaUserDAO.delete(user.getId()));
+        userDAO.save(user);
+        assertThatExceptionOfType(PersistenceException.class).isThrownBy(() -> userDAO.delete(user.getId()));
     }
 
     @Test
     public void deleteIfHasPassports() {
         user.addPassport(createPassport(user));
-        jpaUserDAO.save(user);
-        assertThatExceptionOfType(PersistenceException.class).isThrownBy(() -> jpaUserDAO.delete(user.getId()));
+        userDAO.save(user);
+        assertThatExceptionOfType(PersistenceException.class).isThrownBy(() -> userDAO.delete(user.getId()));
     }
 
     @Test
     public void get() {
         User mockUser = Mockito.mock(User.class);
-        jpaUserDAO.save(user);
-        assertThat(jpaUserDAO.get(user.getId()).isPresent()).isTrue();
-        assertThat(jpaUserDAO.get(user.getId()).orElse(mockUser)).isEqualTo(user);
+        userDAO.save(user);
+        assertThat(userDAO.get(user.getId()).isPresent()).isTrue();
+        assertThat(userDAO.get(user.getId()).orElse(mockUser)).isEqualTo(user);
     }
 
     @Test
@@ -76,18 +87,18 @@ public class JpaUserDAOTest {
         List<User> users = new ArrayList<>();
         users.add(user);
         users.add(anotherUser);
-        jpaUserDAO.save(user);
-        jpaUserDAO.save(anotherUser);
-        assertThat(jpaUserDAO.getAll()).isEqualTo(users);
+        userDAO.save(user);
+        userDAO.save(anotherUser);
+        assertThat(userDAO.getAll()).isEqualTo(users);
     }
 
     @Test
     public void removeOrphanPassports() {
         Passport passport = createPassport(user);
         user.addPassport(passport);
-        jpaUserDAO.save(user);
+        userDAO.save(user);
         user.removePassport(passport);
-        jpaUserDAO.save(user);
+        userDAO.save(user);
         int passportsNumber = EntityManagerUtil.executeOutsideTransaction(entityManager -> entityManager
                 .createNamedQuery(Passport.GET_ALL)
                 .getResultList()

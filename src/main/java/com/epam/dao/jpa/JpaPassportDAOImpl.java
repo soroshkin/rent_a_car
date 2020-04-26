@@ -1,5 +1,6 @@
-package com.epam.dao;
+package com.epam.dao.jpa;
 
+import com.epam.dao.PassportDAO;
 import com.epam.model.Passport;
 
 import java.util.List;
@@ -8,7 +9,7 @@ import java.util.Optional;
 import static com.epam.utils.EntityManagerUtil.executeInTransaction;
 import static com.epam.utils.EntityManagerUtil.executeOutsideTransaction;
 
-public class JpaPassportDAO implements DAO<Passport> {
+public class JpaPassportDAOImpl implements PassportDAO {
     @Override
     public Optional<Passport> get(Long id) {
         return Optional.ofNullable(executeOutsideTransaction(entityManager -> entityManager.find(Passport.class, id)));

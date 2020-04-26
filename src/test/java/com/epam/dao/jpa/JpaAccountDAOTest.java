@@ -1,6 +1,10 @@
-package com.epam.dao;
+package com.epam.dao.jpa;
 
 import com.epam.EntityManagerSetupExtension;
+import com.epam.dao.AccountDAO;
+import com.epam.dao.UserDAO;
+import com.epam.dao.jpa.JpaAccountDAOImpl;
+import com.epam.dao.jpa.JpaUserDAOImpl;
 import com.epam.model.Account;
 import com.epam.model.User;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,22 +22,22 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 @ExtendWith(EntityManagerSetupExtension.class)
 public class JpaAccountDAOTest {
-    private JpaAccountDAO jpaAccountDAO = new JpaAccountDAO();
-    private JpaUserDAO jpaUserDAO = new JpaUserDAO();
+    private AccountDAO accountDAO = new JpaAccountDAOImpl();
+    private UserDAO userDAO = new JpaUserDAOImpl();
     private User user;
     private Account account;
 
     @BeforeEach
     public void setUp() {
         user = createUser();
-        account = jpaUserDAO.save(user).getAccount();
+        account = userDAO.save(user).getAccount();
     }
 
     @Test
     public void get() {
         Account mockAccount = Mockito.mock(Account.class);
-        assertThat(jpaAccountDAO.get(account.getId())).isPresent();
-        assertThat(jpaAccountDAO.get(account.getId()).orElse(mockAccount)).isEqualTo(account);
+        assertThat(accountDAO.get(account.getId())).isPresent();
+        assertThat(accountDAO.get(account.getId()).orElse(mockAccount)).isEqualTo(account);
     }
 
     @Test
@@ -43,20 +47,20 @@ public class JpaAccountDAOTest {
         User anotherUser = createUser("another@email.com");
         Account anotherAccount = anotherUser.getAccount();
         accounts.add(anotherAccount);
-        jpaAccountDAO.save(anotherAccount);
-        assertThat(jpaAccountDAO.getAll()).isEqualTo(accounts);
+        accountDAO.save(anotherAccount);
+        assertThat(accountDAO.getAll()).isEqualTo(accounts);
     }
 
     @Test
     public void save() {
         user.setAccount(null);
-        jpaAccountDAO.delete(1L);
-        assertThat(jpaAccountDAO.save(account)).isEqualTo(account);
+        accountDAO.delete(1L);
+        assertThat(accountDAO.save(account)).isEqualTo(account);
     }
 
     @Test
     public void delete() {
-        assertThat(jpaAccountDAO.delete(account.getId())).isTrue();
+        assertThat(accountDAO.delete(account.getId())).isTrue();
     }
 
     @Test
@@ -64,7 +68,7 @@ public class JpaAccountDAOTest {
         Account anotherAccount = new Account(user);
         user.setAccount(anotherAccount);
         assertThatExceptionOfType(EntityExistsException.class).isThrownBy(() ->
-                jpaUserDAO.save(user));
+                userDAO.save(user));
     }
 
 }

@@ -1,5 +1,6 @@
-package com.epam.dao;
+package com.epam.dao.jpa;
 
+import com.epam.dao.CarDAO;
 import com.epam.model.Car;
 
 import java.util.List;
@@ -8,7 +9,7 @@ import java.util.Optional;
 import static com.epam.utils.EntityManagerUtil.executeInTransaction;
 import static com.epam.utils.EntityManagerUtil.executeOutsideTransaction;
 
-public class JpaCarDAO implements DAO<Car> {
+public class JpaCarDAOImpl implements CarDAO {
     @Override
     public Optional<Car> get(Long id) {
         return Optional.ofNullable(executeOutsideTransaction(entityManager -> entityManager.find(Car.class, id)));

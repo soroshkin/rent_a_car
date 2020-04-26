@@ -1,5 +1,6 @@
-package com.epam.dao;
+package com.epam.dao.jpa;
 
+import com.epam.dao.AccountDAO;
 import com.epam.model.Account;
 
 import java.util.List;
@@ -8,7 +9,7 @@ import java.util.Optional;
 import static com.epam.utils.EntityManagerUtil.executeInTransaction;
 import static com.epam.utils.EntityManagerUtil.executeOutsideTransaction;
 
-public class JpaAccountDAO implements DAO<Account> {
+public class JpaAccountDAOImpl implements AccountDAO {
     @Override
     public Optional<Account> get(Long id) {
         return Optional.ofNullable(executeOutsideTransaction(entityManager -> entityManager.find(Account.class, id)));
