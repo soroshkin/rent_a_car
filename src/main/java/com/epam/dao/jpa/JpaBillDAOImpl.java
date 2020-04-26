@@ -1,5 +1,6 @@
-package com.epam.dao;
+package com.epam.dao.jpa;
 
+import com.epam.dao.BillDAO;
 import com.epam.model.Bill;
 
 import java.util.List;
@@ -8,7 +9,7 @@ import java.util.Optional;
 import static com.epam.utils.EntityManagerUtil.executeInTransaction;
 import static com.epam.utils.EntityManagerUtil.executeOutsideTransaction;
 
-public class JpaBillDAO implements DAO<Bill> {
+public class JpaBillDAOImpl implements BillDAO {
     @Override
     public Optional<Bill> get(Long id) {
         return Optional.ofNullable(executeOutsideTransaction(entityManager -> entityManager.find(Bill.class, id)));

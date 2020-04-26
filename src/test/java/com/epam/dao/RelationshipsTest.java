@@ -1,6 +1,7 @@
 package com.epam.dao;
 
 import com.epam.EntityManagerSetupExtension;
+import com.epam.dao.jpa.*;
 import com.epam.model.Bill;
 import com.epam.model.Car;
 import com.epam.model.Passport;
@@ -23,11 +24,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class RelationshipsTest {
     private User user;
     private Passport passport;
-    private JpaUserDAO jpaUserDAO = new JpaUserDAO();
-    private JpaPassportDAO jpaPassportDAO = new JpaPassportDAO();
-    private JpaCarDAO jpaCarDAO = new JpaCarDAO();
-    private JpaBillDAO jpaBillDAO = new JpaBillDAO();
-    private JpaAccountDAO jpaAccountDAO = new JpaAccountDAO();
+    private UserDAO userDAO = new JpaUserDAOImpl();
+    private PassportDAO passportDAO = new JpaPassportDAOImpl();
+    private CarDAO carDAO = new JpaCarDAOImpl();
+    private BillDAO billDAO = new JpaBillDAOImpl();
+    private AccountDAO accountDAO = new JpaAccountDAOImpl();
 
     @BeforeEach
     void setUp() {
@@ -37,26 +38,26 @@ public class RelationshipsTest {
 
     @Test
     public void tryAutoCreationOfAccounts() {
-        jpaUserDAO.save(user);
-        assertThat(jpaAccountDAO.getAll().size()).isEqualTo(1);
+        userDAO.save(user);
+        assertThat(accountDAO.getAll().size()).isEqualTo(1);
     }
 
     @Test
     public void oToMRelationshipUserPassport() {
-        jpaUserDAO.save(user);
+        userDAO.save(user);
         Car car = createCar();
-        jpaCarDAO.save(car);
+        carDAO.save(car);
         Bill bill = new Bill(LocalDate.now(), BigDecimal.valueOf(100), user, car);
         user.addPassport(passport);
         user.addBill(bill);
-        jpaBillDAO.save(bill);
-        assertThat(jpaPassportDAO.getAll().size()).isEqualTo(1);
+        billDAO.save(bill);
+        assertThat(passportDAO.getAll().size()).isEqualTo(1);
     }
 
     @Test
     public void oToMRelationshipUserPassportOrphanRemove() {
         user.addPassport(passport);
-        jpaUserDAO.save(user);
+        userDAO.save(user);
         Passport passport = executeOutsideTransaction(entityManager -> {
             CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
             CriteriaQuery<Passport> criteriaQuery = criteriaBuilder.createQuery(Passport.class);
@@ -66,17 +67,17 @@ public class RelationshipsTest {
             return entityManager.createQuery(criteriaQuery).getSingleResult();
         });
         user.removePassport(passport);
-        jpaUserDAO.save(user);
-        assertThat(jpaPassportDAO.getAll().size()).isEqualTo(0);
+        userDAO.save(user);
+        assertThat(passportDAO.getAll().size()).isEqualTo(0);
     }
 
     @Test
     public void mToMRelationshipUserCars() {
         Car car = new Car("Tesla", "A343", LocalDate.of(1920, 1, 1), 1000);
-        jpaCarDAO.save(car);
+        carDAO.save(car);
         user.addTripsByCar(car);
         user.addTripsByCar(car);
-        jpaUserDAO.save(user);
+        userDAO.save(user);
         int tripsSize = executeOutsideTransaction(entityManager ->
                 entityManager.createNativeQuery("SELECT * FROM trips")
                         .getResultList()

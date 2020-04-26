@@ -13,10 +13,12 @@ import java.util.Set;
 @Entity
 @Table(name = "users")
 @NamedQuery(name = User.GET, query = "SELECT u FROM User u WHERE id=:id")
+@NamedQuery(name = User.GET_BY_EMAIL, query = "SELECT u FROM User u WHERE email=:email")
 @NamedQuery(name = User.DELETE, query = "DELETE FROM User u WHERE id=:id")
 @NamedQuery(name = User.GET_ALL, query = "SELECT u FROM User u")
 public class User {
     public static final String GET = "User.get";
+    public static final String GET_BY_EMAIL = "User.getByEmail";
     public static final String GET_ALL = "User.getAll";
     public static final String DELETE = "User.delete";
 
