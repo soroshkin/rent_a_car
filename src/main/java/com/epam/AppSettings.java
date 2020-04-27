@@ -1,7 +1,7 @@
 package com.epam;
 
 public enum AppSettings {
-    PERSISTENCE_UNIT("test");
+    PERSISTENCE_UNIT("rental-cars");
 
     private String settingValue;
 

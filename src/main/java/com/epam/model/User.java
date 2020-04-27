@@ -1,5 +1,7 @@
 package com.epam.model;
 
+import com.fasterxml.jackson.annotation.*;
+
 import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
@@ -16,6 +18,9 @@ import java.util.Set;
 @NamedQuery(name = User.GET_BY_EMAIL, query = "SELECT u FROM User u WHERE email=:email")
 @NamedQuery(name = User.DELETE, query = "DELETE FROM User u WHERE id=:id")
 @NamedQuery(name = User.GET_ALL, query = "SELECT u FROM User u")
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class,
+        property = "id",
+        scope = Long.class)
 public class User {
     public static final String GET = "User.get";
     public static final String GET_BY_EMAIL = "User.getByEmail";
@@ -35,9 +40,11 @@ public class User {
     @Column(name = "date_of_birth")
     @Past
     @NotNull
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate dateOfBirth;
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     private Account account;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -63,6 +70,10 @@ public class User {
 
     public Long getId() {
         return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public Account getAccount() {
@@ -101,6 +112,10 @@ public class User {
         return passports;
     }
 
+    public void setPassports(Set<Passport> passports) {
+        this.passports = passports;
+    }
+
     public boolean addPassport(Passport passport) {
         passport.setUser(this);
         return passports.add(passport);
@@ -127,6 +142,7 @@ public class User {
         return tripsByCar.remove(car);
     }
 
+    @JsonIgnore
     public boolean isNew() {
         return id == null;
     }

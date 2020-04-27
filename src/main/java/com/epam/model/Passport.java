@@ -1,5 +1,9 @@
 package com.epam.model;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -10,6 +14,9 @@ import java.util.Objects;
 @NamedQuery(name = Passport.GET, query = "SELECT p FROM Passport p WHERE id=:id")
 @NamedQuery(name = Passport.GET_ALL, query = "SELECT p FROM Passport p")
 @NamedQuery(name = Passport.DELETE, query = "DELETE FROM Passport p WHERE id=:id")
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class,
+        property = "id",
+        scope = Long.class)
 public class Passport {
     public static final String GET = "Passport.get";
     public static final String GET_ALL = "Passport.getAll";
@@ -77,6 +84,14 @@ public class Passport {
         this.surname = surname;
     }
 
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
     protected Passport() {
     }
 
@@ -89,10 +104,7 @@ public class Passport {
         this.user.addPassport(this);
     }
 
-    public void setUser(User user) {
-        this.user = user;
-    }
-
+    @JsonIgnore
     public boolean isNew() {
         return this.id == null;
     }

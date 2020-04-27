@@ -22,6 +22,10 @@ public class ModelUtilityClass {
         return new Passport("AB12345", "some address", "Semen", "Krotov", user);
     }
 
+    public static Passport createPassport(String passportNumber, User user) {
+        return new Passport(passportNumber, "some address", "Semen", "Krotov", user);
+    }
+
     public static Bill createBill(User user, Car car) {
         return new Bill(PAST_DATE, AMOUNT, user, car);
     }

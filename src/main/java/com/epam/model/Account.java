@@ -1,5 +1,7 @@
 package com.epam.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
@@ -16,6 +18,7 @@ import java.util.Objects;
 @NamedQuery(name = Account.GET, query = "SELECT a FROM Account a WHERE id=:id")
 @NamedQuery(name = Account.DELETE, query = "DELETE FROM Account a WHERE id=:id")
 @NamedQuery(name = Account.GET_ALL, query = "SELECT a FROM Account a")
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Account {
     public static final String GET = "Account.get";
     public static final String GET_ALL = "Account.getAll";
@@ -36,6 +39,7 @@ public class Account {
     @MapsId
     @OnDelete(action = OnDeleteAction.CASCADE)
     @NotNull
+    @JsonBackReference
     private User user;
 
     public Long getId() {
@@ -83,7 +87,7 @@ public class Account {
         Account account = (Account) o;
         return depositUSD.compareTo(account.depositUSD) == 0 &&
                 depositEUR.compareTo(account.depositEUR) == 0 &&
-                        user.equals(account.user);
+                user.equals(account.user);
     }
 
     @Override
