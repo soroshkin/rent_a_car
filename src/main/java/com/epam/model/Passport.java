@@ -2,6 +2,7 @@ package com.epam.model;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import javax.persistence.*;
@@ -11,19 +12,24 @@ import java.util.Objects;
 
 @Entity
 @Table(name = "passports")
-@NamedQuery(name = Passport.GET, query = "SELECT p FROM Passport p WHERE id=:id")
-@NamedQuery(name = Passport.GET_ALL, query = "SELECT p FROM Passport p")
+@NamedQuery(name = Passport.FIND_BY_ID, query = "SELECT p FROM Passport p WHERE id=:id")
+@NamedQuery(name = Passport.FIND_ALL, query = "SELECT p FROM Passport p join fetch p.user")
+@NamedQuery(name = Passport.FIND_BY_USER, query = "SELECT p FROM Passport p WHERE p.user.id=:userId")
 @NamedQuery(name = Passport.DELETE, query = "DELETE FROM Passport p WHERE id=:id")
+@NamedQuery(name = Passport.EXISTS, query = "SELECT 1 FROM Passport p WHERE p.id=:id")
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class,
         property = "id",
-        scope = Long.class)
+        scope = Passport.class)
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Passport {
-    public static final String GET = "Passport.get";
-    public static final String GET_ALL = "Passport.getAll";
-    public static final String DELETE = "Passport.delete";
+    public static final String FIND_BY_ID = "Passport.findById";
+    public static final String FIND_ALL = "Passport.findAll";
+    public static final String DELETE = "Passport.deleteById";
+    public static final String FIND_BY_USER = "Passport.findByUser";
+    public static final String EXISTS = "Passport.exists";
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(name = "passport_number", unique = true)

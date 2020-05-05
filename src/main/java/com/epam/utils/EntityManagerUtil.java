@@ -1,6 +1,8 @@
 package com.epam.utils;
 
-import com.epam.AppSettings;
+import com.epam.config.AppSettings;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -10,6 +12,7 @@ import java.util.function.Function;
 
 public class EntityManagerUtil {
     private static EntityManagerFactory entityManagerFactory = createEntityManagerFactory();
+    private static final Logger LOGGER = LogManager.getLogger();
 
     private EntityManagerUtil() {
     }
@@ -25,6 +28,7 @@ public class EntityManagerUtil {
             return r;
         } catch (RuntimeException e) {
             transaction.rollback();
+            LOGGER.error(e);
             throw e;
         }
     }
@@ -38,6 +42,7 @@ public class EntityManagerUtil {
 
     public static void destroyEntityManagerFactory() {
         entityManagerFactory = null;
+        LOGGER.info("entityManagerFactory destroyed");
     }
 
     public static EntityManagerFactory createEntityManagerFactory() {

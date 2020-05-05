@@ -1,5 +1,10 @@
 package com.epam.model;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -15,13 +20,19 @@ import java.util.Set;
 @NamedQuery(name = Car.GET, query = "SELECT c FROM Car c WHERE id=:id")
 @NamedQuery(name = Car.DELETE, query = "DELETE FROM Car c WHERE id=:id")
 @NamedQuery(name = Car.GET_ALL, query = "SELECT c FROM Car c")
+@NamedQuery(name = Car.EXISTS, query = "SELECT 1 FROM Car c WHERE c.id=:id")
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class,
+        property = "id",
+        scope = Car.class)
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Car {
-    public static final String GET = "Car.get";
-    public static final String GET_ALL = "Car.getAll";
-    public static final String DELETE = "Car.delete";
+    public static final String GET = "Car.findById";
+    public static final String GET_ALL = "Car.findAll";
+    public static final String DELETE = "Car.deleteById";
+    public static final String EXISTS = "Car.exists";
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @NotBlank
@@ -42,9 +53,11 @@ public class Car {
     private int mileage;
 
     @ManyToMany(mappedBy = "tripsByCar")
+    @JsonIgnore
     private Set<User> users = new HashSet<>();
 
     @OneToMany(mappedBy = "car", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
     private Set<Bill> bills = new HashSet<>();
 
     protected Car() {

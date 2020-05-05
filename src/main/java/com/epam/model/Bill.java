@@ -1,5 +1,9 @@
 package com.epam.model;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.PastOrPresent;
@@ -13,13 +17,23 @@ import java.util.Objects;
 @NamedQuery(name = Bill.GET, query = "SELECT b FROM Bill b WHERE id=:id")
 @NamedQuery(name = Bill.DELETE, query = "DELETE FROM Bill b WHERE id=:id")
 @NamedQuery(name = Bill.GET_ALL, query = "SELECT b FROM Bill b")
+@NamedQuery(name = Bill.GET_BY_USER, query = "SELECT b FROM Bill b WHERE b.user=:user")
+@NamedQuery(name = Bill.GET_BY_CAR, query = "SELECT b FROM Bill b WHERE b.car=:car")
+@NamedQuery(name = Bill.EXISTS, query = "SELECT 1 FROM Bill b WHERE b.id=:id")
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class,
+        property = "id",
+        scope = Bill.class)
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Bill {
-    public static final String GET = "Bill.get";
-    public static final String GET_ALL = "Bill.getAll";
-    public static final String DELETE = "Bill.delete";
+    public static final String GET = "Bill.findById";
+    public static final String GET_ALL = "Bill.findAll";
+    public static final String DELETE = "Bill.deleteById";
+    public static final String GET_BY_USER = "Bill.findByUser";
+    public static final String GET_BY_CAR = "Bill.findByCar";
+    public static final String EXISTS = "Bill.exists";
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @PastOrPresent

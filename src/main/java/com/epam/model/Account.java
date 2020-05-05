@@ -18,11 +18,15 @@ import java.util.Objects;
 @NamedQuery(name = Account.GET, query = "SELECT a FROM Account a WHERE id=:id")
 @NamedQuery(name = Account.DELETE, query = "DELETE FROM Account a WHERE id=:id")
 @NamedQuery(name = Account.GET_ALL, query = "SELECT a FROM Account a")
+@NamedQuery(name = Account.GET_BY_USER, query = "SELECT a FROM Account a WHERE a.user=:user")
+@NamedQuery(name = Account.EXISTS, query = "SELECT 1 FROM Account a WHERE a.id=:id")
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Account {
-    public static final String GET = "Account.get";
-    public static final String GET_ALL = "Account.getAll";
-    public static final String DELETE = "Account.delete";
+    public static final String GET = "Account.findById";
+    public static final String GET_ALL = "Account.findAll";
+    public static final String GET_BY_USER = "Account.findByUser";
+    public static final String DELETE = "Account.deleteById";
+    public static final String EXISTS = "Account.exists";
 
     @Id
     private Long id;
@@ -39,7 +43,7 @@ public class Account {
     @MapsId
     @OnDelete(action = OnDeleteAction.CASCADE)
     @NotNull
-    @JsonBackReference
+    @JsonBackReference(value = "user-account")
     private User user;
 
     public Long getId() {

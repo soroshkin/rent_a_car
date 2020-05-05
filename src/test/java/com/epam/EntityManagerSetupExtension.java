@@ -15,5 +15,4 @@ public class EntityManagerSetupExtension implements BeforeEachCallback, AfterEac
     public void afterEach(ExtensionContext context) {
         EntityManagerUtil.destroyEntityManagerFactory();
     }
-
 }

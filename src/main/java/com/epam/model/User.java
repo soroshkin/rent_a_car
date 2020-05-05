@@ -16,19 +16,22 @@ import java.util.Set;
 @Table(name = "users")
 @NamedQuery(name = User.GET, query = "SELECT u FROM User u WHERE id=:id")
 @NamedQuery(name = User.GET_BY_EMAIL, query = "SELECT u FROM User u WHERE email=:email")
-@NamedQuery(name = User.DELETE, query = "DELETE FROM User u WHERE id=:id")
+@NamedQuery(name = User.DELETE, query = "DELETE CASCADE FROM User u  WHERE id=:id")
 @NamedQuery(name = User.GET_ALL, query = "SELECT u FROM User u")
+@NamedQuery(name = User.EXISTS, query = "SELECT 1 FROM User u WHERE u.id=:id")
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class,
         property = "id",
-        scope = Long.class)
+        scope = User.class)
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class User {
-    public static final String GET = "User.get";
-    public static final String GET_BY_EMAIL = "User.getByEmail";
-    public static final String GET_ALL = "User.getAll";
-    public static final String DELETE = "User.delete";
+    public static final String GET = "User.findById";
+    public static final String GET_BY_EMAIL = "User.findByEmail";
+    public static final String GET_ALL = "User.findAll";
+    public static final String DELETE = "User.deleteById";
+    public static final String EXISTS = "User.exists";
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(name = "email", unique = true)
@@ -44,19 +47,22 @@ public class User {
     private LocalDate dateOfBirth;
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference
+    @JsonManagedReference(value = "user-account")
     private Account account;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
     private Set<Passport> passports = new HashSet<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
     private Set<Bill> bills = new HashSet<>();
 
     @ManyToMany
     @JoinTable(name = "trips",
             joinColumns = {@JoinColumn(name = "user_id")},
             inverseJoinColumns = @JoinColumn(name = "cars_id"))
+    @JsonIgnore
     private Set<Car> tripsByCar = new HashSet<>();
 
     protected User() {
