@@ -6,8 +6,10 @@ import org.hibernate.annotations.OnDeleteAction;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.math.MathContext;
 import java.math.RoundingMode;
+import java.util.Objects;
 
 @Entity
 @Table(name = "accounts")
@@ -22,7 +24,7 @@ public class Account {
     @Id
     private Long id;
 
-    @Column(name = "deposint_USD", scale = 2, precision = 12)
+    @Column(name = "deposit_USD", scale = 2, precision = 12)
     @NotNull
     private BigDecimal depositUSD;
 
@@ -45,8 +47,12 @@ public class Account {
 
     public Account(User user) {
         MathContext mathContext = new MathContext(2, RoundingMode.HALF_EVEN);
-        this.depositUSD = new BigDecimal(0, mathContext);
-        this.depositEUR = new BigDecimal(0, mathContext);
+        this.depositUSD = new BigDecimal(BigInteger.ZERO, mathContext);
+        this.depositEUR = new BigDecimal(BigInteger.ZERO, mathContext);
+        this.user = user;
+    }
+
+    public void setUser(User user) {
         this.user = user;
     }
 
@@ -68,6 +74,21 @@ public class Account {
 
     public boolean isNew() {
         return this.id == null;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Account account = (Account) o;
+        return depositUSD.compareTo(account.depositUSD) == 0 &&
+                depositEUR.compareTo(account.depositEUR) == 0 &&
+                        user.equals(account.user);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(depositUSD, depositEUR, user);
     }
 
     @Override

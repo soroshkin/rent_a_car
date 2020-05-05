@@ -6,6 +6,7 @@ import javax.validation.constraints.PastOrPresent;
 import javax.validation.constraints.PositiveOrZero;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Objects;
 
 @Entity
 @Table(name = "bills")
@@ -18,7 +19,7 @@ public class Bill {
     public static final String DELETE = "Bill.delete";
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
 
     @PastOrPresent
@@ -30,18 +31,31 @@ public class Bill {
     @NotNull
     private BigDecimal amount;
 
-    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     @NotNull
     private User user;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "car_id")
+    @NotNull
+    private Car car;
+
     protected Bill() {
     }
 
-    public Bill(@PastOrPresent LocalDate date, @PositiveOrZero BigDecimal amount, User user) {
+    public Bill(@PastOrPresent @NotNull LocalDate date, @PositiveOrZero @NotNull BigDecimal amount, @NotNull User user, @NotNull Car car) {
         this.date = date;
         this.amount = amount;
-        this.user = user;
+        this.user = Objects.requireNonNull(user, "user must not be null");
+        this.user.addBill(this);
+        this.car = Objects.requireNonNull(car, "car must not be null");
+        this.car.addBill(this);
+    }
+
+    @PreRemove
+    public void deleteCar() {
+        car.removeBill(this);
     }
 
     public Long getId() {
@@ -52,8 +66,52 @@ public class Bill {
         this.user = user;
     }
 
+    public LocalDate getDate() {
+        return date;
+    }
+
+    public void setDate(LocalDate date) {
+        this.date = date;
+    }
+
+    public BigDecimal getAmount() {
+        return amount;
+    }
+
+    public void setAmount(BigDecimal amount) {
+        this.amount = amount;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public Car getCar() {
+        return car;
+    }
+
+    public void setCar(Car car) {
+        this.car = car;
+    }
+
     public boolean isNew() {
         return id == null;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Bill bill = (Bill) o;
+        return date.equals(bill.date) &&
+                amount.compareTo(bill.amount) == 0 &&
+                user.equals(bill.user) &&
+                car.equals(bill.car);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(date, amount, user, car);
     }
 
     @Override
