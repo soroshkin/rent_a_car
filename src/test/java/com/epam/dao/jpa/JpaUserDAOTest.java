@@ -3,8 +3,6 @@ package com.epam.dao.jpa;
 import com.epam.EntityManagerSetupExtension;
 import com.epam.dao.CarDAO;
 import com.epam.dao.UserDAO;
-import com.epam.dao.jpa.JpaCarDAOImpl;
-import com.epam.dao.jpa.JpaUserDAOImpl;
 import com.epam.model.Car;
 import com.epam.model.Passport;
 import com.epam.model.User;
@@ -14,16 +12,13 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 
-import javax.persistence.PersistenceException;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import static com.epam.ModelUtilityClass.*;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 @ExtendWith(EntityManagerSetupExtension.class)
 public class JpaUserDAOTest {
@@ -60,14 +55,14 @@ public class JpaUserDAOTest {
         carDAO.save(car);
         createBill(user, car);
         userDAO.save(user);
-        assertThatExceptionOfType(PersistenceException.class).isThrownBy(() -> userDAO.delete(user.getId()));
+        assertThat(userDAO.delete(user.getId())).isTrue();
     }
 
     @Test
     public void deleteIfHasPassports() {
         user.addPassport(createPassport(user));
         userDAO.save(user);
-        assertThatExceptionOfType(PersistenceException.class).isThrownBy(() -> userDAO.delete(user.getId()));
+        assertThat(userDAO.delete(user.getId())).isTrue();
     }
 
     @Test

@@ -34,8 +34,14 @@ public class JpaCarDAOImpl implements CarDAO {
 
     @Override
     public boolean delete(Long id) {
-        return executeInTransaction(entityManager -> entityManager.createNamedQuery(Car.DELETE)
-                .setParameter("id", id)
-                .executeUpdate() != 0);
+        return executeInTransaction(entityManager -> {
+            Car car = entityManager.find(Car.class, id);
+            if (car != null) {
+                entityManager.remove(car);
+                return true;
+            } else {
+                return false;
+            }
+        });
     }
 }

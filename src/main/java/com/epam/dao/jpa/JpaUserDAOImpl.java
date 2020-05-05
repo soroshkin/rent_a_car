@@ -44,10 +44,15 @@ public class JpaUserDAOImpl implements UserDAO {
 
     @Override
     public boolean delete(Long id) {
-        return executeInTransaction(entityManager -> entityManager
-                .createNamedQuery(User.DELETE)
-                .setParameter("id", id)
-                .executeUpdate() != 0);
+        return executeInTransaction(entityManager -> {
+            User user = entityManager.find(User.class, id);
+            if (user != null) {
+                entityManager.remove(user);
+                return true;
+            } else {
+                return false;
+            }
+        });
     }
 }
 
