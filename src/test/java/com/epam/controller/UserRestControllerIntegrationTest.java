@@ -28,14 +28,13 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.Matchers.anyLong;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = WebConfig.class)
 @WebAppConfiguration
-public class UserControllerIntegrationTest {
+public class UserRestControllerIntegrationTest {
 
     //    @Autowired
 //    private WebApplicationContext webAppContext;
@@ -123,6 +122,15 @@ public class UserControllerIntegrationTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(userJSON))
                 .andExpect(status().isBadRequest())
+                .andReturn();
+    }
+
+    @Test
+    public void deleteUserShouldReturn200() throws Exception {
+        when(userService.existsById(anyLong())).thenReturn(false);
+
+        mockMvc.perform(delete("/users/1"))
+                .andExpect(status().isNotFound())
                 .andReturn();
     }
 }

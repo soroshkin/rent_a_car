@@ -1,4 +1,4 @@
-package com.epam;
+package com.epam.extension;
 
 import com.epam.utils.EntityManagerUtil;
 import org.junit.jupiter.api.extension.AfterEachCallback;

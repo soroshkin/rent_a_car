@@ -1,4 +1,4 @@
-package com.epam;
+package com.epam.util;
 
 import com.epam.model.*;
 

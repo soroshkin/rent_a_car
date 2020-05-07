@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Controller
-@RequestMapping("/bills")
+@RequestMapping(path = "/bills")
 public class BillRestController {
     private static final String BILL_NOT_FOUND = "bill with id=%d not found";
     private BillService billService;

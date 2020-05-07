@@ -8,6 +8,7 @@
 <body>
 <div class="json-table">
     <p>JSON Test</p>
+    <div class="json-row">
 
     <form class="json-left-form" action="${pageContext.request.contextPath}/json/serialize">
         <input type="submit" value="serialize"/>
@@ -16,6 +17,7 @@
     <form class="json-right-form" action="${pageContext.request.contextPath}/json/deserialize">
         <input type="submit" value="deserialize"/>
     </form>
+    </div>
 
 </div>
 

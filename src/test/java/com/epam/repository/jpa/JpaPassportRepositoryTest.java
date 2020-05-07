@@ -1,6 +1,6 @@
 package com.epam.repository.jpa;
 
-import com.epam.EntityManagerSetupExtension;
+import com.epam.extension.EntityManagerSetupExtension;
 import com.epam.model.Passport;
 import com.epam.model.User;
 import com.epam.repository.PassportRepository;
@@ -13,8 +13,8 @@ import org.mockito.Mockito;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.epam.ModelUtilityClass.createPassport;
-import static com.epam.ModelUtilityClass.createUser;
+import static com.epam.util.ModelUtilityClass.createPassport;
+import static com.epam.util.ModelUtilityClass.createUser;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(EntityManagerSetupExtension.class)

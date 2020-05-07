@@ -1,6 +1,6 @@
 package com.epam.repository;
 
-import com.epam.EntityManagerSetupExtension;
+import com.epam.extension.EntityManagerSetupExtension;
 import com.epam.repository.jpa.*;
 import com.epam.model.Bill;
 import com.epam.model.Car;
@@ -16,7 +16,7 @@ import javax.persistence.criteria.Root;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-import static com.epam.ModelUtilityClass.*;
+import static com.epam.util.ModelUtilityClass.*;
 import static com.epam.utils.EntityManagerUtil.executeOutsideTransaction;
 import static org.assertj.core.api.Assertions.assertThat;
 

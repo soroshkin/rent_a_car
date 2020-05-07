@@ -32,7 +32,6 @@ public class JpaUserRepositoryImpl implements UserRepository {
 
     @Override
     public User save(User user) {
-
         return executeInTransaction(entityManager -> {
             if (user.isNew()) {
                 entityManager.persist(user);
@@ -45,16 +44,17 @@ public class JpaUserRepositoryImpl implements UserRepository {
 
     @Override
     public void deleteById(Long id) {
-        executeInTransaction(entityManager -> entityManager
-                .createNamedQuery(User.DELETE)
-                .setParameter("id", id)
-                .executeUpdate());
+        executeInTransaction(entityManager -> {
+            User user = entityManager.find(User.class, id);
+            entityManager.remove(user);
+            return true;
+        });
     }
 
     @Override
     public boolean existsById(Long id) {
         return executeOutsideTransaction(entityManager ->
-                !entityManager.createQuery(User.EXISTS)
+                !entityManager.createNamedQuery(User.EXISTS)
                         .setParameter("id", id)
                         .getResultList().isEmpty());
     }

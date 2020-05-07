@@ -1,7 +1,7 @@
 package com.epam.parsers;
 
-import com.epam.EntityManagerSetupExtension;
-import com.epam.ModelUtilityClass;
+import com.epam.extension.EntityManagerSetupExtension;
+import com.epam.util.ModelUtilityClass;
 import com.epam.model.Passport;
 import com.epam.model.User;
 import com.epam.repository.PassportRepository;

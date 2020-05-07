@@ -16,9 +16,9 @@ import java.util.Set;
 @Table(name = "users")
 @NamedQuery(name = User.GET, query = "SELECT u FROM User u WHERE id=:id")
 @NamedQuery(name = User.GET_BY_EMAIL, query = "SELECT u FROM User u WHERE email=:email")
-@NamedQuery(name = User.DELETE, query = "DELETE CASCADE FROM User u  WHERE id=:id")
+@NamedQuery(name = User.DELETE, query = "DELETE FROM User u  WHERE id=:id")
 @NamedQuery(name = User.GET_ALL, query = "SELECT u FROM User u")
-@NamedQuery(name = User.EXISTS, query = "SELECT 1 FROM User u WHERE u.id=:id")
+@NamedQuery(name = User.EXISTS, query = "FROM User u WHERE u.id=:id")
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class,
         property = "id",
         scope = User.class)

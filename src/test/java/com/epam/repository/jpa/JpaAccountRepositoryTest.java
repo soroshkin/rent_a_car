@@ -1,6 +1,6 @@
 package com.epam.repository.jpa;
 
-import com.epam.EntityManagerSetupExtension;
+import com.epam.extension.EntityManagerSetupExtension;
 import com.epam.repository.AccountRepository;
 import com.epam.repository.UserRepository;
 import com.epam.model.Account;
@@ -13,8 +13,9 @@ import org.mockito.Mockito;
 import javax.persistence.EntityExistsException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
-import static com.epam.ModelUtilityClass.createUser;
+import static com.epam.util.ModelUtilityClass.createUser;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 

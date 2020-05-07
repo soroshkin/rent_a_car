@@ -24,7 +24,7 @@ import java.util.Objects;
 public class Account {
     public static final String GET = "Account.findById";
     public static final String GET_ALL = "Account.findAll";
-    public static final String GET_BY_USER = "Account.findByUser";
+    public static final String GET_BY_USER = "Account.getByUser";
     public static final String DELETE = "Account.deleteById";
     public static final String EXISTS = "Account.exists";
 
@@ -58,6 +58,15 @@ public class Account {
         this.depositUSD = new BigDecimal(BigInteger.ZERO, mathContext);
         this.depositEUR = new BigDecimal(BigInteger.ZERO, mathContext);
         this.user = user;
+    }
+
+    @PreRemove
+    public void deleteFromUser(){
+        this.user.setAccount(null);
+    }
+
+    public User getUser() {
+        return user;
     }
 
     public void setUser(User user) {

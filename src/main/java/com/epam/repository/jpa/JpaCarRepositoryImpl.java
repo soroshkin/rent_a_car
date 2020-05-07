@@ -34,15 +34,17 @@ public class JpaCarRepositoryImpl implements CarRepository {
 
     @Override
     public void deleteById(Long id) {
-        executeInTransaction(entityManager -> entityManager.createNamedQuery(Car.DELETE)
-                .setParameter("id", id)
-                .executeUpdate());
+        executeInTransaction(entityManager -> {
+            Car car = entityManager.find(Car.class, id);
+                entityManager.remove(car);
+                return true;
+        });
     }
 
     @Override
     public boolean existsById(Long id) {
         return executeOutsideTransaction(entityManager ->
-                !entityManager.createQuery(Car.EXISTS)
+                !entityManager.createNamedQuery(Car.EXISTS)
                         .setParameter("id", id)
                         .getResultList().isEmpty());
     }

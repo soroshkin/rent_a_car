@@ -26,9 +26,9 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import java.time.LocalDate;
 import java.util.Arrays;
 
-import static org.hamcrest.Matchers.*;
-import static org.mockito.Matchers.*;
-import static org.mockito.Mockito.doNothing;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
+import static org.mockito.Matchers.anyLong;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -37,7 +37,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = WebConfig.class)
 @WebAppConfiguration
-public class PassportControllerIntegrationTest {
+public class PassportRestControllerIntegrationTest {
     @Autowired
     private MappingJackson2HttpMessageConverter converter;
 
@@ -81,12 +81,12 @@ public class PassportControllerIntegrationTest {
 
 
     @Test
-    public void getByIdIfNotValidShouldThrowNotFoundExceptionAndReturn400() throws Exception {
-        when(service.findAllByUser(Matchers.any(User.class))).thenThrow(new IllegalArgumentException("sdfs"));
+    public void getByUserIfNotValidShouldThrowNotFoundExceptionAndReturn400() throws Exception {
+        when(service.findAllByUser(Matchers.any(User.class))).thenThrow(new IllegalArgumentException("message"));
 
         String userJSON = objectMapper.writeValueAsString(user);
 
-        mockMvc.perform(get("/passports/byUser/1")
+        mockMvc.perform(get("/passports/byUser")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(userJSON))
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -126,6 +126,7 @@ public class PassportControllerIntegrationTest {
                 .andExpect(jsonPath("address", is("some address")))
                 .andReturn();
     }
+
     @Test
     public void createPassportShouldReturn400IfPassportNull() throws Exception {
         Passport passport = null;
@@ -141,7 +142,7 @@ public class PassportControllerIntegrationTest {
     }
 
     @Test
-    public void deletePassportShoulReturn200IfDeleteOk() throws Exception {
+    public void deletePassportShouldReturn200IfDeleteOk() throws Exception {
         when(service.existsById(anyLong())).thenReturn(true);
 
     mockMvc.perform(delete("/passports/1"))
@@ -151,7 +152,7 @@ public class PassportControllerIntegrationTest {
     }
 
     @Test
-    public void deletePassportShoulReturn400IfNotFound() throws Exception {
+    public void deletePassportShouldReturn400IfNotFound() throws Exception {
         when(service.existsById(anyLong())).thenReturn(false);
 
         mockMvc.perform(delete("/passports/1"))

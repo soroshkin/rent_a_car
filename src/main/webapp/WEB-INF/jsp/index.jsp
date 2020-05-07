@@ -15,9 +15,13 @@
 
 </head>
 <body>
-<p>
-    RENT-A-CAR
-</p>
+<div class="users-table">
+    <a href="${pageContext.request.contextPath}/json">
+        ------>JSON test<------
+        <p></p>
+    </a>
+</div>
+
 
 <%--<div class="full-screen-overlay"></div>--%>
 <%--<div class="ffb-buttons-bar">--%>

@@ -1,6 +1,6 @@
 package com.epam.repository.jpa;
 
-import com.epam.EntityManagerSetupExtension;
+import com.epam.extension.EntityManagerSetupExtension;
 import com.epam.model.Bill;
 import com.epam.model.Car;
 import com.epam.model.User;
@@ -17,7 +17,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.epam.ModelUtilityClass.*;
+import static com.epam.util.ModelUtilityClass.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(EntityManagerSetupExtension.class)
