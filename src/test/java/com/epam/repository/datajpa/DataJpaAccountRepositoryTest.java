@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlGroup;
@@ -19,12 +20,14 @@ import org.springframework.test.context.web.WebAppConfiguration;
 
 import java.util.Optional;
 
+import static com.epam.config.Profiles.SPRING_DATA_PROFILE;
 import static org.assertj.core.api.Assertions.assertThat;
 
+@ActiveProfiles(SPRING_DATA_PROFILE)
 @ExtendWith(SpringExtension.class)
-@WebAppConfiguration
 @ContextConfiguration(classes = WebConfig.class)
-@SqlGroup(@Sql(scripts = "classpath:db/clearDB.sql"))
+@WebAppConfiguration
+@SqlGroup(@Sql(executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD, scripts = "classpath:db/clearDB.sql"))
 public class DataJpaAccountRepositoryTest {
     private Account account;
     private User user;
@@ -68,7 +71,7 @@ public class DataJpaAccountRepositoryTest {
     }
 
     @Test
-    public void saveShouldReturnAccount(){
+    public void saveShouldReturnAccount() {
         accountRepository.deleteById(account.getId());
         account = accountRepository.save(account);
 
@@ -77,7 +80,7 @@ public class DataJpaAccountRepositoryTest {
     }
 
     @Test
-    public void deleteByIdShouldDelete(){
+    public void deleteByIdShouldDelete() {
         assertThat(accountRepository.existsById(account.getId())).isTrue();
         accountRepository.deleteById(account.getId());
         assertThat(accountRepository.existsById(account.getId())).isFalse();

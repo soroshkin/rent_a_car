@@ -14,6 +14,7 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
@@ -24,6 +25,7 @@ import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Optional;
 
+import static com.epam.config.Profiles.JPA_PROFILE;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.Matchers.anyLong;
@@ -31,13 +33,11 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+@ActiveProfiles(JPA_PROFILE)
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = WebConfig.class)
 @WebAppConfiguration
 public class UserRestControllerIntegrationTest {
-
-    //    @Autowired
-//    private WebApplicationContext webAppContext;
     private MockMvc mockMvc;
 
     @Mock
@@ -49,7 +49,6 @@ public class UserRestControllerIntegrationTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.initMocks(this);
-//        mockMvc = MockMvcBuilders.webAppContextSetup(webAppContext).build();
         mockMvc = MockMvcBuilders
                 .standaloneSetup(userRestController)
                 .setControllerAdvice(new RestResponseEntityExceptionHandler())

@@ -3,12 +3,16 @@ package com.epam.repository.datajpa;
 import com.epam.model.User;
 import com.epam.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
 
+import static com.epam.config.Profiles.SPRING_DATA_PROFILE;
+
 @Repository
+@Profile(SPRING_DATA_PROFILE)
 public class DataJpaUserRepositoryImpl implements UserRepository {
     private CrudUserRepository crudUserRepository;
 

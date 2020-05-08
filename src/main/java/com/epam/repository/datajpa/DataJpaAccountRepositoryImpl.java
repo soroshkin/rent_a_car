@@ -4,11 +4,15 @@ import com.epam.model.Account;
 import com.epam.model.User;
 import com.epam.repository.AccountRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
 
+import static com.epam.config.Profiles.SPRING_DATA_PROFILE;
+
+@Profile(SPRING_DATA_PROFILE)
 @Repository
 public class DataJpaAccountRepositoryImpl implements AccountRepository {
     private CrudAccountRepository repository;

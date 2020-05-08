@@ -15,6 +15,7 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlGroup;
@@ -24,13 +25,15 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import java.util.Arrays;
 import java.util.List;
 
+import static com.epam.config.Profiles.SPRING_DATA_PROFILE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
+@ActiveProfiles(SPRING_DATA_PROFILE)
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = WebConfig.class)
 @WebAppConfiguration
-@SqlGroup(@Sql(scripts = "classpath:db/clearDB.sql"))
+@SqlGroup(@Sql(executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD, scripts = "classpath:db/clearDB.sql"))
 public class DataJpaCarRepositoryTest {
     private Car car;
 

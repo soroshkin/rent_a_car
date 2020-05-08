@@ -20,9 +20,8 @@ import java.util.Properties;
 
 @Configuration
 @EnableTransactionManagement
-@EnableJpaRepositories(basePackages = {"com.epam.repository.datajpa"})
+@EnableJpaRepositories(basePackages = {"com.epam.repository"})
 public class PersistenceJpaConfig {
-
     @Bean
     public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
         LocalContainerEntityManagerFactoryBean em =

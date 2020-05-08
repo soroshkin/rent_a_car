@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Optional;
 
-@Controller
+@RestController
 @RequestMapping(path = "/accounts")
 public class AccountRestController {
     private static final String ACCOUNT_NOT_FOUND = "account with id=%d not found";
@@ -20,7 +20,6 @@ public class AccountRestController {
     private AccountService accountService;
 
     @Autowired
-
     public AccountRestController(AccountService accountService) {
         this.accountService = accountService;
     }

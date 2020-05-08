@@ -17,8 +17,8 @@ import org.springframework.web.servlet.view.JstlView;
 
 import java.util.List;
 
-@Configuration
 @EnableWebMvc
+@Configuration
 @ComponentScan(basePackages = {"com.epam"})
 public class WebConfig implements WebMvcConfigurer {
     @Bean

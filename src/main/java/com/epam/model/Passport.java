@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import org.springframework.data.jpa.repository.EntityGraph;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
@@ -21,12 +22,14 @@ import java.util.Objects;
         property = "id",
         scope = Passport.class)
 @JsonIgnoreProperties(ignoreUnknown = true)
+@NamedEntityGraph(name = Passport.GRAPH_PASSPORT_USER, attributeNodes = @NamedAttributeNode("user"))
 public class Passport {
     public static final String FIND_BY_ID = "Passport.findById";
     public static final String FIND_ALL = "Passport.findAll";
     public static final String DELETE = "Passport.deleteById";
     public static final String FIND_BY_USER = "Passport.findByUser";
     public static final String EXISTS = "Passport.exists";
+    public static final String GRAPH_PASSPORT_USER = "graph.Passport.user";
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

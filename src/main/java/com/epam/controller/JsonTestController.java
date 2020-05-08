@@ -9,7 +9,6 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.stereotype.Controller;
@@ -23,7 +22,6 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-
 
 @Controller
 @RequestMapping(path = "/json")
@@ -45,7 +43,7 @@ public class JsonTestController {
         return "jsontest";
     }
 
-    @GetMapping(path = "/serialize", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(path = "/serialize")
     public @ResponseBody
     String getJSONFromDB() throws JsonProcessingException, NotFoundException {
         List<Passport> passports = passportService.findAllByUser(getUser());
@@ -76,8 +74,8 @@ public class JsonTestController {
     }
 
     private User getUser() throws NotFoundException {
-        Long userId = 1L;
-        return userService.findById(userId).orElseThrow(() ->
-                new NotFoundException(String.format("user with id=%d not found", userId)));
+        String email = "email1@mail.ru";
+        return userService.findByEmail(email).orElseThrow(() ->
+                new NotFoundException(String.format("user with email=%s not found", email)));
     }
 }
