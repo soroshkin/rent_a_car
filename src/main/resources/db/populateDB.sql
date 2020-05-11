@@ -33,10 +33,10 @@ VALUES ('Moscow', 'Semen', 'dqqwe321', 'Krotov', '1');
 INSERT INTO passports (address, name, passport_number, surname, user_id)
 VALUES ('Moscow', 'Semen', 'dsa1321', 'Krotov', '1');
 
-INSERT INTO cars (id, mileage, model, production_date, registration_number)
-VALUES ('1', '200', 'Tesla', '2000-01-01', '23423');
-INSERT INTO cars (id, mileage, model, production_date, registration_number)
-VALUES ('2', '33200', 'ZAZ', '2000-01-01', 'AB54353');
+INSERT INTO cars (mileage, model, production_date, registration_number)
+VALUES ('200', 'Tesla', '2000-01-01', '23423');
+INSERT INTO cars (mileage, model, production_date, registration_number)
+VALUES ('33200', 'ZAZ', '2000-01-01', 'AB54353');
 
 INSERT INTO bills (amount, date, car_id, user_id)
 VALUES ('200', '2000-01-01', '1', '1');

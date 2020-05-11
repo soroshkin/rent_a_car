@@ -6,13 +6,12 @@ import javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
 
-@Controller
+@RestController
 @RequestMapping(path = "/users")
 public class UserRestController {
     private static final String USER_NOT_FOUND = "user with id=%d not found";
@@ -52,7 +51,8 @@ public class UserRestController {
     @PostMapping
     public ResponseEntity<User> createUser(
             @RequestBody User user) {
-        return ResponseEntity.of(Optional.ofNullable(userService.save(user)));
+        return ResponseEntity.of(Optional.ofNullable(
+                userService.save(user)));
     }
 
     @DeleteMapping(path = "/{id}")

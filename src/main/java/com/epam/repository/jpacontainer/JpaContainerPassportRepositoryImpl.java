@@ -71,15 +71,13 @@ public class JpaContainerPassportRepositoryImpl implements PassportRepository {
     @Override
     @Transactional
     public void deleteById(Long id) {
-        entityManager
-                .createNamedQuery(Passport.DELETE)
-                .setParameter("id", id)
-                .executeUpdate();
+        Passport passport = entityManager.find(Passport.class, id);
+        entityManager.remove(passport);
     }
 
     @Override
     public boolean existsById(Long id) {
-        return !entityManager.createQuery(Passport.EXISTS)
+        return !entityManager.createNamedQuery(Passport.EXISTS)
                 .setParameter("id", id)
                 .getResultList().isEmpty();
     }

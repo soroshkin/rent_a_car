@@ -5,7 +5,9 @@ import com.epam.model.User;
 import com.epam.repository.PassportRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.Assert;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -23,18 +25,28 @@ public class PassportServiceImpl implements PassportService {
         return passportRepository.findById(id);
     }
 
+    private final Comparator<Passport> passportComparator = Comparator
+            .comparing(Passport::getSurname)
+            .thenComparing(Passport::getName)
+            .thenComparing(Passport::getPassportNumber);
+
     @Override
     public List<Passport> findAll() {
-        return passportRepository.findAll();
+        List<Passport> passports = passportRepository.findAll();
+        passports.sort(passportComparator);
+        return passports;
     }
 
     @Override
     public List<Passport> findAllByUser(User user) {
-        return passportRepository.findAllByUser(user);
+        List<Passport> passports = passportRepository.findAllByUser(user);
+        passports.sort(passportComparator);
+        return passports;
     }
 
     @Override
     public Passport save(Passport passport) {
+        Assert.notNull(passport, "passport must not be null");
         return passportRepository.save(passport);
     }
 

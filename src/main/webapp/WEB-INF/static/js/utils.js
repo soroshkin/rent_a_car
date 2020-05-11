@@ -4,174 +4,324 @@
     }
 
     const ffbUtils = {};
-
+    ffbUtils.store = {
+        locations: [],
+        users: [],
+        passports: [],
+        userViews: [],
+        editUser: null
+    };
     ffbUtils.templates = {};
+
+    ffbUtils.ajax = {
+        baseUrl: '',
+        get usersUrl() {
+            return this.baseUrl + '/users';
+        },
+        get accountsUrl() {
+            return this.baseUrl + '/accounts';
+        },
+    };
+
     ffbUtils.init = function () {
         ffbUtils.templates.record = document.querySelector('#template-record').content;
         const createRecordView = document.body.querySelector('.ffb-edit-record-wrapper');
         ffbUtils.store.createRecordView = createRecordView;
         createRecordView.style.display = 'none';
 
-        const dropDown = createRecordView.querySelector('.ffb-locations-dropdown-wrapper');
-        dropDown.addEventListener('click', (event) => {
-            //TODO: move to function
-            const locationField = document.body.querySelector('.ffb-edit-record-location-name');
-            locationField.innerText = event.target.innerText;
-            dropDown.classList.add('display-none');
-            event.preventDefault();
-            event.stopImmediatePropagation();
-        });
-
-        document.body.addEventListener('click', () => {
-            dropDown.classList.add('display-none');
-        });
-
-        dropDown.classList.add('display-none');
-
-        createRecordView.querySelector('.ffb-edit-field-location')
-            .addEventListener('click', function (event) {
-                //TODO: move to function
-                const dropDown = document.body.querySelector('.ffb-locations-dropdown-wrapper');
-                dropDown.classList.remove('display-none');
-                const locations = document.body.querySelector('.ffb-locations-dropdown');
-                locations.innerHTML = '';
-                ffbUtils.store.locations.forEach((l) => {
-                    locations.append(ffbUtils.location.createDropDownElement(l.name));
-                });
-                event.preventDefault();
-                event.stopImmediatePropagation();
+        createRecordView.querySelector('.ffb-edit-record-save-btn')
+            .addEventListener('click', function () {
+                // ffbUtils.spinner.fullScreenOverlay.style.display = 'none';
+                closeOverlay();
+                ffbUtils.store.createRecordView.style.display = 'none';
+                const id = document.body.querySelector(".user-edit-record-userId").value;
+                const email = document.body.querySelector('.user-edit-record-email').value;
+                const dateOfBirth = document.body.querySelector('.user-edit-record-dateOfBirth').value;
+                const depositUSD = document.body.querySelector('.users-edit-record-account-depositusd').value;
+                const depositEUR = document.body.querySelector('.users-edit-record-account-depositeur').value;
+                // modalOverlay.classList.toggle("closed");
+                let user = {
+                    id: id,
+                    email: email,
+                    dateOfBirth: dateOfBirth,
+                };
+                let account = {
+                    id: id,
+                    depositUSD: depositUSD,
+                    depositEUR: depositEUR,
+                    user: {
+                        id: id
+                    }
+                };
+                if (ffbUtils.store.editUser) {
+                    const editUser = ffbUtils.store.editUser;
+                    user.id = editUser.id;
+                    ffbUtils.ajax
+                        .updateUser(user)
+                        .then(
+                            (data) => {
+                                ffbUtils.userFunctions.refreshTable();
+                            },
+                            (error) => console.log(error.response)
+                        );
+                    ffbUtils.ajax
+                        .updateAccount(account)
+                        .then(
+                            (data) => {
+                                ffbUtils.userFunctions.refreshTable();
+                            },
+                            (error) => console.log(error.response)
+                        );
+                } else {
+                    user.id = null;
+                    ffbUtils.ajax
+                        .createUser(user)
+                        .then(
+                            (data) => {
+                                account.id = data.data.id;
+                                account.user.id = account.id;
+                                ffbUtils.ajax
+                                    .createAccount(account)
+                                    .then(
+                                        (data) => {
+                                            ffbUtils.userFunctions.refreshTable();
+                                        },
+                                        (error) => console.error(error)
+                                    );
+                                ffbUtils.userFunctions.refreshTable();
+                            },
+                            (error) => console.error(error)
+                        );
+                }
             });
+
+        modalOverlay.addEventListener('click', function () {
+            closeModal();
+            ffbUtils.store.createRecordView.style.display = 'none';
+        })
+
 
         createRecordView.querySelector('.ffb-edit-record-cancel-btn')
             .addEventListener('click', () => {
                 // ffbUtils.spinner.fullScreenOverlay.style.display = 'none';
                 ffbUtils.store.createRecordView.style.display = 'none';
+                // modalOverlay.classList.toggle('closed');
+                closeOverlay();
             });
 
-        ffbUtils.store.cubeTable = document.querySelector('.ffb-table-content');
-
-    };
-
-    ffbUtils.store = {
-        locations: [],
-        users: [],
-        passports: [],
-        cubeViews: [],
-        editCube: null
-    };
-
-    ffbUtils.ajax = {
-        baseUrl: '',
-        get productionLocationsUrl() {
-            return this.baseUrl + '/production-locations';
-        },
-        get usersUrl() {
-            return this.baseUrl + '/users';
-        },
-        get passportsUrl() {
-            return this.baseUrl + '/passports';
-        }
-    };
-    ffbUtils.ajax.getProductionLocations = function () {
-        // ffbUtils.spinner.showSpinner();
-        return window.axios
-            .get(this.productionLocationsUrl)
-            .then((response) => {
-                ffbUtils.store.locations = response.data;
-                // ffbUtils.spinner.hideSpinner();
+        document.body.querySelector('.user-create-record')
+            .addEventListener('click', function () {
+                ffbUtils.userFunctions.createNewRecord(false);
+                openOverlay();
             })
-            .catch((err) => {
-                console.error(err);
-                // ffbUtils.spinner.hideSpinner();
-            });
+
+        document.body.querySelector('.user-refresh-records')
+            .addEventListener('click', function () {
+                ffbUtils.userFunctions.refreshTable();
+            })
+
+        ffbUtils.store.userTable = document.querySelector('.ffb-table-content');
     };
 
     ffbUtils.ajax.getUsers = function () {
-        // ffbUtils.spinner.showSpinner();
+        ffbUtils.spinner.showSpinner();
         return window.axios
             .get(this.usersUrl)
             .then((response) => {
                 ffbUtils.store.users = response.data;
-                // ffbUtils.spinner.hideSpinner();
+                ffbUtils.spinner.hideSpinner();
             })
             .catch((err) => {
                 console.error(err);
-                // ffbUtils.spinner.hideSpinner();
+                ffbUtils.spinner.hideSpinner();
             });
     };
 
 
-    ffbUtils.user = {};
-    ffbUtils.user.refreshTable = function () {
+    ffbUtils.userFunctions = {};
+    ffbUtils.userFunctions.refreshTable = function () {
         ffbUtils.ajax.getUsers().then(() => {
-            ffbUtils.user.cleanTable();
-            ffbUtils.user.fillTable();
+            ffbUtils.userFunctions.cleanTable();
+            ffbUtils.userFunctions.fillTable();
         })
-
     };
 
-    ffbUtils.user.fillTable = function () {
+    ffbUtils.errorHandler = {};
+
+    //return promise
+    ffbUtils.ajax.updateUser = function (user) {
+        return window.axios.put(`${this.usersUrl}/${user.id}`, user)
+            .catch(function (error) {
+                if (error.response) {
+                    ffbUtils.errorHandler.showModal(error.response.data, error.response.status)
+                }
+            });
+    };
+
+    ffbUtils.ajax.updateAccount = function (account) {
+        return window.axios.put(`${this.accountsUrl}/${account.id}`, account)
+            .catch(function (error) {
+                if (error.response) {
+                    ffbUtils.errorHandler.showModal(error.response.data, error.response.status)
+                }
+            });
+    };
+
+    ffbUtils.ajax.createUser = function (user) {
+        return window.axios.post(`${this.usersUrl}`, user)
+            .catch(function (error) {
+                if (error.response) {
+                    ffbUtils.errorHandler.showModal(error.response.data, error.response.status)
+                }
+            });
+    };
+
+    ffbUtils.ajax.createAccount = function (account) {
+        return window.axios.post(`${this.accountsUrl}`, account)
+            .catch(function (error) {
+                if (error.response) {
+                    ffbUtils.errorHandler.showModal(error.response.data, error.response.status)
+                }
+            });
+    };
+
+    ffbUtils.ajax.deleteUser = function (user) {
+        return window.axios.delete(`${this.usersUrl}/${user.id}`)
+            .catch(function (error) {
+                if (error.response) {
+                    ffbUtils.errorHandler.showModal(error.response.data, error.response.status);
+                }
+            });
+    };
+
+    ffbUtils.errorHandler.showModal = function (errorMessage, status) {
+        openModal(errorMessage + ".\n Status: " + status);
+    }
+
+    ffbUtils.userFunctions.fillTable = function () {
         ffbUtils.store.users.forEach((c) => {
-            ffbUtils.store.cubeTable.append(ffbUtils.user.createRecord(c));
+            ffbUtils.store.userTable.append(ffbUtils.userFunctions.createRecord(c));
         })
     };
 
-    ffbUtils.user.cleanTable = function () {
-        ffbUtils.store.cubeTable.innerHTML = '';
+    ffbUtils.userFunctions.cleanTable = function () {
+        ffbUtils.store.userTable.innerHTML = '';
     };
 
-    ffbUtils.user.createRecord = function (user) {
+
+    ffbUtils.userFunctions.createRecord = function (user) {
         const viewTemplate = ffbUtils.templates.record;
-        // const colorCell = viewTemplate.querySelector('.user-color');
-        // colorCell.innerHTML = `
-        //     <div class="ffb-cube-color-sample" style="background-color: ${user.color}"></div>
-        //     ${user.color}
-        //     `;
-        // viewTemplate.querySelector('.user-production-location').innerText = user.productionLocation.name;
-        viewTemplate.querySelector('.user-date').innerText = user.dateOfBirth;
         viewTemplate.querySelector('.user-id').innerText = user.id;
         viewTemplate.querySelector('.user-email').innerText = user.email;
-        viewTemplate.querySelector('.user-deposit').innerText = user.account.depositUSD;
-        // viewTemplate.querySelector('.user-passports').innerText = user.email;
+        viewTemplate.querySelector('.user-date').innerText = user.dateOfBirth;
+        viewTemplate.querySelector('.user-deposit-usd').innerText = user.account.depositUSD;
+        viewTemplate.querySelector('.user-deposit-eur').innerText = user.account.depositEUR;
         let view = document.importNode(viewTemplate, true);
-        view.cubeId = user.id;
-        view.querySelector('.fbb-user-edit-btn')
-            .addEventListener('click', function (event) {
-                ffbUtils.user.update(user)
-            });
-        // view.querySelector('.fbb-user-delete-btn')
-        //     .addEventListener('click', function () {
-        //         ffbUtils.user.delete(user);
-        //     });
+        view.userId = user.id;
 
-        ffbUtils.store.cubeViews.push(view);
+        //edit button
+        view.querySelector('.fbb-user-edit-btn')
+            .addEventListener('click', function () {
+                ffbUtils.userFunctions.update(user);
+                openOverlay();
+            });
+
+        view.querySelector('.fbb-user-delete-btn')
+            .addEventListener('click', function () {
+                ffbUtils.spinner.showSpinner();
+                ffbUtils.ajax
+                    .deleteUser(user)
+                    .then(
+                        (data) => {
+                            ffbUtils.userFunctions.refreshTable();
+                            ffbUtils.spinner.hideSpinner();
+                        },
+                        (error) => console.log(error.response)
+                    )
+                    .catch((err) => {
+                        console.error(err);
+                        ffbUtils.spinner.hideSpinner();
+                    });
+            });
+
+        ffbUtils.store.userViews.push(view);
 
         return view;
     };
 
-    ffbUtils.user.update = function (user) {
-        ffbUtils.user.createNew(true, user);
+    ffbUtils.userFunctions.update = function (user) {
+        ffbUtils.userFunctions.createNewRecord(true, user);
     }
 
-    ffbUtils.user.createNew = function (edit, user) {
+    //edit entity user
+    ffbUtils.userFunctions.createNewRecord = function (edit, user) {
         ffbUtils.store.createRecordView.style.display = '';
-        // ffbUtils.spinner.fullScreenOverlay.style.display = '';
-        const colorField = document.body.querySelector('.ffb-edit-record-color');
-        const sizeField = document.body.querySelector('.ffb-edit-record-size');
-        const locationField = document.body.querySelector('.ffb-edit-record-location-name');
+        openOverlay();
+        const userId = document.body.querySelector('.user-edit-record-userId');
+        const email = document.body.querySelector('.user-edit-record-email');
+        const dateOfBirth = document.body.querySelector('.user-edit-record-dateOfBirth');
+        const accountDepositUSD = document.body.querySelector('.users-edit-record-account-depositusd');
+        const accountDepositEUR = document.body.querySelector('.users-edit-record-account-depositeur');
         if (edit) {
             ffbUtils.store.editUser = user;
-            //
-            // colorField.value = cube.color;
-            // sizeField.value = cube.size;
-            locationField.innerText = user.account.depositUSD;
+            userId.innerText = user.id;
+            userId.value = user.id;
+            email.value = user.email;
+            dateOfBirth.value = user.dateOfBirth;
+            accountDepositUSD.value = user.account.depositUSD;
+            accountDepositEUR.value = user.account.depositEUR;
         } else {
-            colorField.value = '';
-            locationField.innerText = '';
-            sizeField.value = '';
+            userId.innerText = '';
+            email.value = "new_email@epam.com";
+            dateOfBirth.value = '0000-00-00';
+            accountDepositUSD.value = '0';
+            accountDepositEUR.value = '0';
             ffbUtils.store.editUser = null;
         }
     }
+
+
+    ffbUtils.spinner = {};
+    ffbUtils.spinner.spinnerContainerClassName = 'ffb-spinner-container';
+    ffbUtils.spinner.spinnerClassName = 'ffb-spinner';
+
+    ffbUtils.spinner.createSpinner = function () {
+        if (document.body.querySelector(`.${this.spinnerContainerClassName}`)) {
+            return;
+        }
+
+        const spinnerContainer = document.createElement('div');
+        spinnerContainer.classList.add(this.spinnerContainerClassName);
+
+        const spinner = document.createElement('div');
+        spinner.classList.add(this.spinnerClassName);
+        spinnerContainer.append(spinner);
+
+        spinner.innerHTML = ` <div class="sk-grid">
+                                   <div class="sk-grid-cube"></div>
+                                   <div class="sk-grid-cube"></div>
+                                   <div class="sk-grid-cube"></div>
+                                   <div class="sk-grid-cube"></div>
+                                   <div class="sk-grid-cube"></div>
+                                   <div class="sk-grid-cube"></div>
+                                   <div class="sk-grid-cube"></div>
+                                   <div class="sk-grid-cube"></div>
+                                   <div class="sk-grid-cube"></div>
+                               </div>
+                             `;
+        document.body.prepend(spinnerContainer);
+        ffbUtils.spinner.spinnerContainer = spinnerContainer;
+    };
+
+    ffbUtils.spinner.showSpinner = function () {
+        openOverlay();
+        this.spinnerContainer.style.display = '';
+    };
+
+    ffbUtils.spinner.hideSpinner = function () {
+        closeOverlay();
+        this.spinnerContainer.style.display = 'none';
+    };
 
     window.ffbUtils = ffbUtils;
 }());

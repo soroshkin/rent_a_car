@@ -32,7 +32,7 @@ public class JpaBillRepositoryImpl implements BillRepository {
     }
 
     @Override
-    public List<Bill> findByCar(Car car) {
+    public List<Bill> findAllByCar(Car car) {
         return executeOutsideTransaction(entityManager ->
                 entityManager.createNamedQuery(Bill.GET_BY_CAR, Bill.class)
                         .setParameter("car", car)

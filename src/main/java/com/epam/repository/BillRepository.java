@@ -14,7 +14,7 @@ public interface BillRepository {
 
     List<Bill> findAllByUser(User user);
 
-    List<Bill> findByCar(Car car);
+    List<Bill> findAllByCar(Car car);
 
     Bill save(Bill bill);
 

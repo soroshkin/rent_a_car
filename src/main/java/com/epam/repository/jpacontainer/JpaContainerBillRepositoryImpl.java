@@ -41,7 +41,7 @@ public class JpaContainerBillRepositoryImpl implements BillRepository {
     }
 
     @Override
-    public List<Bill> findByCar(Car car) {
+    public List<Bill> findAllByCar(Car car) {
         return entityManager.createNamedQuery(Bill.GET_BY_CAR, Bill.class)
                 .setParameter("car", car)
                 .getResultList();
@@ -68,7 +68,7 @@ public class JpaContainerBillRepositoryImpl implements BillRepository {
 
     @Override
     public boolean existsById(Long id) {
-        return !entityManager.createQuery(Bill.EXISTS)
+        return !entityManager.createNamedQuery(Bill.EXISTS)
                 .setParameter("id", id)
                 .getResultList().isEmpty();
     }

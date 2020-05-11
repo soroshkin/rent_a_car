@@ -57,7 +57,7 @@ public class JpaContainerBillRepositoryTest {
     }
 
     @Test
-    public void get() {
+    public void findByIdShouldReturnBillWithGivenId() {
         billRepository.save(bill);
         Bill mockBill = Mockito.mock(Bill.class);
         assertThat(billRepository.findById(bill.getId())).isPresent();
@@ -66,7 +66,7 @@ public class JpaContainerBillRepositoryTest {
     }
 
     @Test
-    public void getAll() {
+    public void findAllShouldReturnListOfBills() {
         billRepository.save(bill);
         carRepository.save(car);
         Bill anotherBill = new Bill(LocalDate.now(), BigDecimal.valueOf(1.23), user, car);
@@ -78,12 +78,12 @@ public class JpaContainerBillRepositoryTest {
     }
 
     @Test
-    public void saveBill() {
+    public void saveBillShouldSaveBill() {
         assertThat(bill).isSameAs(bill);
     }
 
     @Test
-    public void delete() {
+    public void deleteShouldDeleteBill() {
         billRepository.save(bill);
         billRepository.deleteById(bill.getId());
         assertThat(billRepository.findById(bill.getId())).isEmpty();

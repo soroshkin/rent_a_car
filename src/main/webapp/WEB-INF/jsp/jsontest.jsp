@@ -4,6 +4,7 @@
 <head>
     <title>JSON Test</title>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/styles.css">
+    <jsp:include page="fragments/header.jsp"/>
 </head>
 <body>
 <div class="json-table">

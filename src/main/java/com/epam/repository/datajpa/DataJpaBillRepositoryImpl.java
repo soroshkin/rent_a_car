@@ -39,7 +39,7 @@ public class DataJpaBillRepositoryImpl implements BillRepository {
     }
 
     @Override
-    public List<Bill> findByCar(Car car) {
+    public List<Bill> findAllByCar(Car car) {
         return crudBillRepository.getByCar(car);
     }
 

@@ -79,7 +79,7 @@ public class BillRestControllerIntegrationTest {
     public void getBillsByUserShouldReturn200AndCorrectJSONIfValid() throws Exception {
         List<Bill> billList = Arrays.asList(bill, bill);
 
-        when(billService.findByUser(any(User.class))).thenReturn(billList);
+        when(billService.findAllByUser(any(User.class))).thenReturn(billList);
         String userJSON = objectMapper.writeValueAsString(user);
 
 
@@ -99,7 +99,7 @@ public class BillRestControllerIntegrationTest {
     public void getBillsByUserShouldReturn400IfUserNotFound() throws Exception {
         List<Bill> billList = Arrays.asList(bill, bill);
 
-        when(billService.findByUser(any(User.class))).thenReturn(billList);
+        when(billService.findAllByUser(any(User.class))).thenReturn(billList);
         String userJSON = objectMapper.writeValueAsString(null);
 
         mockMvc.perform(get("/bills")

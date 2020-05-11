@@ -4,7 +4,10 @@ import com.epam.model.User;
 import com.epam.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.Assert;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -30,12 +33,24 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<User> findAll() {
-        return repository.findAll();
+        List<User> users = repository.findAll();
+        users.sort(Comparator.comparing(User::getEmail));
+        return users;
     }
 
     @Override
+    @Transactional
     public User save(User user) {
-        return repository.save(user);
+        Assert.notNull(user, "user must not be null");
+        User userFromDB;
+        if (repository.existsById(user.getId())) {
+            userFromDB = repository.findById(user.getId()).get();
+            userFromDB.setEmail(user.getEmail());
+            userFromDB.setDateOfBirth(user.getDateOfBirth());
+        } else {
+            userFromDB = new User(user.getEmail(), user.getDateOfBirth());
+        }
+        return repository.save(userFromDB);
     }
 
     @Override

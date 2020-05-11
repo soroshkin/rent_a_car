@@ -61,7 +61,7 @@ public class JpaContainerAccountRepositoryImpl implements AccountRepository {
 
     @Override
     public boolean existsById(Long id) {
-        return !entityManager.createQuery(Account.EXISTS)
+        return !entityManager.createNamedQuery(Account.EXISTS)
                 .setParameter("id", id)
                 .getResultList().isEmpty();
     }

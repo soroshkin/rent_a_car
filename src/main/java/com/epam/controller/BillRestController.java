@@ -26,7 +26,7 @@ public class BillRestController {
 
     @GetMapping
     public ResponseEntity<List<Bill>> getBillsByUser(@RequestBody User user) {
-        return ResponseEntity.of(Optional.of(billService.findByUser(user)));
+        return ResponseEntity.of(Optional.of(billService.findAllByUser(user)));
     }
 
     @GetMapping(path = "/{id}")

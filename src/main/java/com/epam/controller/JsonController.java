@@ -25,13 +25,13 @@ import java.util.Optional;
 
 @Controller
 @RequestMapping(path = "/json")
-public class JsonTestController {
+public class JsonController {
     private UserService userService;
     private PassportService passportService;
     private ObjectMapper objectMapper;
 
     @Autowired
-    public JsonTestController(UserService userService, PassportService passportService, MappingJackson2HttpMessageConverter converter) {
+    public JsonController(UserService userService, PassportService passportService, MappingJackson2HttpMessageConverter converter) {
         this.userService = userService;
         this.passportService = passportService;
         this.objectMapper = converter.getObjectMapper();

@@ -12,6 +12,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.TransactionSystemException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
@@ -31,8 +32,19 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
     @ExceptionHandler(EmptyResultDataAccessException.class)
     protected ResponseEntity<Object> handleConflict(RuntimeException ex, WebRequest request) {
         LOG.error(ex.getMessage());
-        String bodyOfResponse = "No data presents";
+        String bodyOfResponse = "No data presents \n" + ex.getCause().getMessage();
         return new ResponseEntity<>(bodyOfResponse, headers, HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(TransactionSystemException.class)
+    protected ResponseEntity<Object> handleTransactionSystemException(RuntimeException ex, WebRequest request) {
+        StringBuilder bodyOfResponse = new StringBuilder();
+        ((javax.validation.ConstraintViolationException) ex.getCause().getCause())
+                .getConstraintViolations()
+                .forEach(v -> bodyOfResponse
+                        .append(String.format("%s \"%s\" - %s", v.getPropertyPath(), v.getInvalidValue(), v.getMessage())));
+        LOG.error(ex.getCause().getMessage());
+        return handleExceptionInternal(ex, bodyOfResponse, headers, HttpStatus.UNPROCESSABLE_ENTITY, request);
     }
 
     @ExceptionHandler(value = {NotFoundException.class})
@@ -59,8 +71,8 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
     @ExceptionHandler(value = {DataIntegrityViolationException.class,
             ConstraintViolationException.class})
     protected ResponseEntity<Object> handleDataIntegrityViolation(RuntimeException ex, WebRequest request) {
-        LOG.error(ex.getMessage());
-        String bodyOfResponse = ex.getMessage();
+        LOG.error(ex.getCause().getCause().getMessage());
+        String bodyOfResponse = ex.getCause().getCause().getMessage();
 
         return handleExceptionInternal(ex, bodyOfResponse, headers, HttpStatus.BAD_REQUEST, request);
     }
