@@ -1,16 +1,20 @@
 package com.epam.utils;
 
-import com.epam.config.AppSettings;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.support.PropertiesLoaderUtils;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
+import java.io.IOException;
+import java.util.Objects;
+import java.util.Properties;
 import java.util.function.Function;
 
-public class EntityManagerUtil {
+public abstract class EntityManagerUtil {
     private static EntityManagerFactory entityManagerFactory = createEntityManagerFactory();
     private static final Logger LOGGER = LogManager.getLogger();
 
@@ -46,7 +50,16 @@ public class EntityManagerUtil {
     }
 
     public static EntityManagerFactory createEntityManagerFactory() {
-        entityManagerFactory = Persistence.createEntityManagerFactory(AppSettings.PERSISTENCE_UNIT.getSettingValue());
+        try {
+            Properties properties = PropertiesLoaderUtils
+                    .loadProperties(new ClassPathResource("app.properties"));
+            entityManagerFactory = Persistence
+                    .createEntityManagerFactory(properties.getProperty("persistence.unit"));
+        } catch (IOException e) {
+            Objects.requireNonNull(LOGGER).error(
+                    String.format("application properties file not found. %s", e.getMessage()));
+        }
+
         return entityManagerFactory;
     }
 }

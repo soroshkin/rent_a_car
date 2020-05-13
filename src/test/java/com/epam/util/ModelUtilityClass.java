@@ -6,9 +6,12 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 
-public class ModelUtilityClass {
+public abstract class ModelUtilityClass {
     private static final LocalDate PAST_DATE = LocalDate.now().minus(1, ChronoUnit.YEARS);
     private static final BigDecimal AMOUNT = BigDecimal.valueOf(2.54);
+
+    private ModelUtilityClass() {
+    }
 
     public static User createUser() {
         return new User("email@domain.com", PAST_DATE);

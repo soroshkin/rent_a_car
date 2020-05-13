@@ -5,7 +5,6 @@ import com.epam.model.User;
 import com.epam.service.PassportService;
 import javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -40,7 +39,7 @@ public class PassportRestController {
 
     @GetMapping(path = "/byUser")
     public ResponseEntity<List<Passport>> getByUser(@RequestBody User user) {
-        return new ResponseEntity<>(passportService.findAllByUser(user), HttpStatus.OK);
+        return ResponseEntity.of(Optional.ofNullable(passportService.findAllByUser(user)));
     }
 
     @PutMapping(path = "/{id}")
@@ -63,7 +62,7 @@ public class PassportRestController {
     public ResponseEntity<Long> deletePassport(@PathVariable(name = "id") Long id) throws NotFoundException {
         if (passportService.existsById(id)) {
             passportService.deleteById(id);
-            return new ResponseEntity<>(id, HttpStatus.OK);
+            return ResponseEntity.of(Optional.of(id));
         } else {
             throw new NotFoundException(String.format(PASSPORT_NOT_FOUND, id));
         }

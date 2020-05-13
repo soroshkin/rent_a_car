@@ -77,7 +77,6 @@ public class AccountRestControllerIntegrationTest {
         account.setDepositUSD(BigDecimal.valueOf(10.5));
         List<Account> accounts = Arrays.asList(account, account);
         when(accountService.findAll()).thenReturn(accounts);
-        String d = objectMapper.writeValueAsString(accounts);
 
         mockMvc.perform(get("/accounts"))
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))

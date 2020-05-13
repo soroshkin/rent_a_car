@@ -4,7 +4,6 @@ import com.epam.model.User;
 import com.epam.service.UserService;
 import javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,7 +24,7 @@ public class UserRestController {
 
     @GetMapping
     public ResponseEntity<List<User>> getUsers() {
-        return new ResponseEntity<>(userService.findAll(), HttpStatus.OK);
+        return ResponseEntity.of(Optional.ofNullable(userService.findAll()));
     }
 
     @GetMapping(path = "/{id}")

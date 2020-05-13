@@ -4,7 +4,6 @@ import com.epam.model.Account;
 import com.epam.service.AccountService;
 import javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -57,10 +56,9 @@ public class AccountRestController {
     public ResponseEntity<Long> deleteAccount(@PathVariable(name = "id") Long id) throws NotFoundException {
         if (accountService.existsById(id)) {
             accountService.deleteById(id);
-            return new ResponseEntity<>(id, HttpStatus.OK);
+            return ResponseEntity.of(Optional.of(id));
         } else {
             throw new NotFoundException(String.format(ACCOUNT_NOT_FOUND, id));
         }
     }
-
 }

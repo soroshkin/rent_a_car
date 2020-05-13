@@ -2,6 +2,7 @@ package com.epam.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
@@ -16,44 +17,53 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import javax.sql.DataSource;
+import java.util.Objects;
 import java.util.Properties;
+
+import static org.hibernate.cfg.AvailableSettings.*;
 
 @Configuration
 @EnableTransactionManagement
 @EnableJpaRepositories(basePackages = {"com.epam.repository"})
 public class PersistenceJpaConfig {
+
+    private Environment environment;
+
+    public PersistenceJpaConfig(Environment environment) {
+        this.environment = environment;
+    }
+
+    private Properties hibernateJpaProperties() {
+        Properties properties = new Properties();
+        properties.put(DIALECT, environment.getProperty("spring.jpa.properties.hibernate.dialect"));
+        properties.put(HBM2DDL_AUTO, environment.getProperty("spring.jpa.hibernate.ddl-auto"));
+        properties.put(SHOW_SQL, environment.getProperty("spring.jpa.show-sql"));
+
+        return properties;
+    }
+
     @Bean
     public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
         LocalContainerEntityManagerFactoryBean em =
                 new LocalContainerEntityManagerFactoryBean();
-        em.setDataSource(dataSource());
         em.setPackagesToScan("com.epam.model");
+        em.setDataSource(dataSource());
         JpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
         em.setJpaVendorAdapter(vendorAdapter);
-        em.setJpaProperties(additionalProperties());
+        em.setJpaProperties(hibernateJpaProperties());
         em.setPersistenceUnitName("rent");
 
         return em;
     }
 
-//    @Bean
-//    public DataSource dataSource() {
-//        DriverManagerDataSource dataSource = new DriverManagerDataSource();
-//        dataSource.setDriverClassName("org.postgresql.Driver");
-//        dataSource.setUrl("jdbc:postgresql://localhost:5432/rent-a-car");
-//        dataSource.setUsername("user");
-//        dataSource.setPassword("password");
-//
-//        return dataSource;
-//    }
-
     @Bean
     public DataSource dataSource() {
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
-        dataSource.setDriverClassName("org.h2.Driver");
-        dataSource.setUrl("jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1");
-        dataSource.setUsername("sa");
-        dataSource.setPassword("");
+        dataSource.setDriverClassName(
+                Objects.requireNonNull(environment.getProperty("spring.datasource.driver-class-name")));
+        dataSource.setUrl(environment.getProperty("spring.datasource.url"));
+        dataSource.setUsername(environment.getProperty("spring.datasource.username"));
+        dataSource.setPassword(environment.getProperty("spring.datasource.password"));
 
         return dataSource;
     }
@@ -71,18 +81,11 @@ public class PersistenceJpaConfig {
         return new PersistenceExceptionTranslationPostProcessor();
     }
 
-    Properties additionalProperties() {
-        Properties properties = new Properties();
-        properties.setProperty("hibernate.show_sql", "true");
-        properties.setProperty("hibernate.hbm2ddl.auto", "create");
-
-        return properties;
-    }
-
     @Bean
     public DataSourceInitializer dataSourceInitializer() {
         ResourceDatabasePopulator resourceDatabasePopulator = new ResourceDatabasePopulator();
-        resourceDatabasePopulator.addScript(new ClassPathResource("db/populateDB.sql"));
+        resourceDatabasePopulator.addScript(
+                new ClassPathResource(Objects.requireNonNull(environment.getProperty("spring.datasource.data"))));
         DataSourceInitializer dataSourceInitializer = new DataSourceInitializer();
         dataSourceInitializer.setDataSource(dataSource());
         dataSourceInitializer.setDatabasePopulator(resourceDatabasePopulator);
@@ -90,3 +93,5 @@ public class PersistenceJpaConfig {
         return dataSourceInitializer;
     }
 }
+
+

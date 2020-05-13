@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import javax.transaction.Transactional;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
@@ -31,14 +30,15 @@ public class JsonController {
     private ObjectMapper objectMapper;
 
     @Autowired
-    public JsonController(UserService userService, PassportService passportService, MappingJackson2HttpMessageConverter converter) {
+    public JsonController(UserService userService,
+                          PassportService passportService,
+                          MappingJackson2HttpMessageConverter converter) {
         this.userService = userService;
         this.passportService = passportService;
         this.objectMapper = converter.getObjectMapper();
     }
 
     @GetMapping
-    @Transactional
     public String getTestPage() {
         return "jsontest";
     }
