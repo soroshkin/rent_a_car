@@ -43,7 +43,7 @@ public class UserServiceImpl implements UserService {
     public User save(User user) {
         Assert.notNull(user, "user must not be null");
         User userFromDB;
-        if (repository.existsById(user.getId())) {
+        if (user.getId() != null && repository.existsById(user.getId())) {
             userFromDB = repository.findById(user.getId()).get();
             userFromDB.setEmail(user.getEmail());
             userFromDB.setDateOfBirth(user.getDateOfBirth());

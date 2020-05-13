@@ -1,70 +1,45 @@
 package com.epam.controller;
 
-import com.epam.config.WebConfig;
-import com.epam.exception.RestResponseEntityExceptionHandler;
 import com.epam.model.Passport;
 import com.epam.model.User;
 import com.epam.service.PassportService;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Matchers;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.time.LocalDate;
 import java.util.Arrays;
 
-import static com.epam.config.Profiles.JPA_PROFILE;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
-import static org.mockito.Matchers.anyLong;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@ActiveProfiles(JPA_PROFILE)
-@ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = WebConfig.class)
-@WebAppConfiguration
+@SpringBootTest
+@AutoConfigureMockMvc
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 public class PassportRestControllerIntegrationTest {
-    @Autowired
-    private MappingJackson2HttpMessageConverter converter;
-
-    private ObjectMapper objectMapper;
     private User user = new User("some@email.ru", LocalDate.now());
+
+    @Autowired
+    private ObjectMapper objectMapper;
+
+    @Autowired
     private MockMvc mockMvc;
 
-
-    @Mock
+    @MockBean
     private PassportService service;
-
-    @InjectMocks
-    private PassportRestController controller;
-
-    @BeforeEach
-    void setUp() {
-        MockitoAnnotations.initMocks(this);
-        mockMvc = MockMvcBuilders
-                .standaloneSetup(controller)
-                .setControllerAdvice(new RestResponseEntityExceptionHandler())
-                .build();
-
-        objectMapper = converter.getObjectMapper();
-    }
 
     @Test
     public void getAllShouldReturn200AndCorrectJSONIfValid() throws Exception {
@@ -85,7 +60,7 @@ public class PassportRestControllerIntegrationTest {
 
     @Test
     public void getByUserIfNotValidShouldThrowNotFoundExceptionAndReturn400() throws Exception {
-        when(service.findAllByUser(Matchers.any(User.class))).thenThrow(new IllegalArgumentException("message"));
+        when(service.findAllByUser(any(User.class))).thenThrow(new IllegalArgumentException("message"));
 
         String userJSON = objectMapper.writeValueAsString(user);
 
@@ -103,7 +78,7 @@ public class PassportRestControllerIntegrationTest {
         String passportJSON = objectMapper.writeValueAsString(passport);
 
         when(service.existsById(anyLong())).thenReturn(true);
-        when(service.save(Matchers.any(Passport.class))).thenReturn(passport);
+        when(service.save(any(Passport.class))).thenReturn(passport);
 
         mockMvc.perform(put("/passports/1")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -119,7 +94,7 @@ public class PassportRestControllerIntegrationTest {
         Passport passport = new Passport("1", "some address", "Semen", "Fedorov", user);
         String passportJSON = objectMapper.writeValueAsString(passport);
 
-        when(service.save(Matchers.any(Passport.class))).thenReturn(passport);
+        when(service.save(any(Passport.class))).thenReturn(passport);
 
         mockMvc.perform(post("/passports")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -135,7 +110,7 @@ public class PassportRestControllerIntegrationTest {
         Passport passport = null;
         String passportJSON = objectMapper.writeValueAsString(passport);
 
-        when(service.save(Matchers.any(Passport.class))).thenReturn(passport);
+        when(service.save(any(Passport.class))).thenReturn(passport);
 
         mockMvc.perform(post("/passports")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -164,5 +139,4 @@ public class PassportRestControllerIntegrationTest {
                 .andDo(MockMvcResultHandlers.print())
                 .andReturn();
     }
-
 }

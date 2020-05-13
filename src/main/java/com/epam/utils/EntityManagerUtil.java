@@ -45,14 +45,16 @@ public abstract class EntityManagerUtil {
     }
 
     public static void destroyEntityManagerFactory() {
-        entityManagerFactory = null;
-        LOGGER.info("entityManagerFactory destroyed");
+        if(entityManagerFactory.isOpen()) {
+            entityManagerFactory.close();
+            LOGGER.info("entityManagerFactory destroyed");
+        }
     }
 
     public static EntityManagerFactory createEntityManagerFactory() {
         try {
             Properties properties = PropertiesLoaderUtils
-                    .loadProperties(new ClassPathResource("app.properties"));
+                    .loadProperties(new ClassPathResource("application.properties"));
             entityManagerFactory = Persistence
                     .createEntityManagerFactory(properties.getProperty("persistence.unit"));
         } catch (IOException e) {

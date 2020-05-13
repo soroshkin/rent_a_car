@@ -50,6 +50,7 @@ public class JpaCarRepositoryTest {
 
     @Test
     public void deleteCar() {
+        boolean r = carRepository.findById(1L).isPresent();
         carRepository.save(car);
         carRepository.deleteById(car.getId());
         assertThat(carRepository.existsById(car.getId())).isFalse();
@@ -60,8 +61,8 @@ public class JpaCarRepositoryTest {
     public void getCar() {
         Car mockCar = Mockito.mock(Car.class);
         carRepository.save(car);
-        assertThat(carRepository.findById(1L).isPresent()).isTrue();
-        assertThat(carRepository.findById(1L).orElse(mockCar)).isEqualTo(car);
+        assertThat(carRepository.findById(car.getId()).isPresent()).isTrue();
+        assertThat(carRepository.findById(car.getId()).orElse(mockCar)).isEqualTo(car);
     }
 
     @Test

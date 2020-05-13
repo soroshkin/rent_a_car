@@ -1,22 +1,18 @@
 package com.epam.repository.jpacontainer;
 
-import com.epam.config.WebConfig;
 import com.epam.model.Account;
 import com.epam.model.User;
 import com.epam.repository.AccountRepository;
 import com.epam.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlGroup;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.context.web.WebAppConfiguration;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,9 +23,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 @ActiveProfiles(JPA_PROFILE)
-@ExtendWith(SpringExtension.class)
-@WebAppConfiguration
-@ContextConfiguration(classes = WebConfig.class)
+@SpringBootTest
 @SqlGroup(@Sql(scripts = "classpath:db/clearDB.sql"))
 public class JpaContainerAccountRepositoryTest {
     @Autowired
@@ -85,5 +79,4 @@ public class JpaContainerAccountRepositoryTest {
         assertThatExceptionOfType(DataIntegrityViolationException.class).isThrownBy(() ->
                 userRepository.save(user));
     }
-
 }

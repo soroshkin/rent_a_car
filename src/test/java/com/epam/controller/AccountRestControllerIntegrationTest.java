@@ -1,28 +1,19 @@
 package com.epam.controller;
 
-import com.epam.config.WebConfig;
-import com.epam.exception.RestResponseEntityExceptionHandler;
 import com.epam.model.Account;
 import com.epam.model.User;
 import com.epam.service.AccountService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Matchers;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -30,44 +21,33 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import static com.epam.config.Profiles.JPA_PROFILE;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
-import static org.mockito.Matchers.anyLong;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@ActiveProfiles(JPA_PROFILE)
-@ContextConfiguration(classes = WebConfig.class)
-@ExtendWith(SpringExtension.class)
-@WebAppConfiguration
+@SpringBootTest
+@AutoConfigureMockMvc
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 public class AccountRestControllerIntegrationTest {
     private User user;
     private Account account;
-    private ObjectMapper objectMapper;
-    private MockMvc mockMvc;
 
     @Autowired
-    private MappingJackson2HttpMessageConverter converter;
+    private ObjectMapper objectMapper;
 
-    @Mock
+    @Autowired
+    private MockMvc mockMvc;
+
+    @MockBean
     private AccountService accountService;
-
-    @InjectMocks
-    private AccountRestController accountRestController;
 
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.initMocks(this);
-
-        mockMvc = MockMvcBuilders
-                .standaloneSetup(accountRestController)
-                .setControllerAdvice(new RestResponseEntityExceptionHandler())
-                .build();
-
-        objectMapper = converter.getObjectMapper();
         user = new User("some@email.com", LocalDate.now());
         account = user.getAccount();
     }
@@ -114,7 +94,7 @@ public class AccountRestControllerIntegrationTest {
         String accountJSON = objectMapper.writeValueAsString(account);
 
         when(accountService.existsById(anyLong())).thenReturn(true);
-        when(accountService.save(org.mockito.Matchers.any(Account.class))).thenReturn(account);
+        when(accountService.save(any(Account.class))).thenReturn(account);
 
         mockMvc.perform(put("/accounts/1")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -130,7 +110,7 @@ public class AccountRestControllerIntegrationTest {
     public void createAccountShouldReturn200IfValid() throws Exception {
         String accountJSON = objectMapper.writeValueAsString(account);
 
-        when(accountService.save(Matchers.any(Account.class))).thenReturn(account);
+        when(accountService.save(any(Account.class))).thenReturn(account);
 
         mockMvc.perform(post("/accounts")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -145,7 +125,7 @@ public class AccountRestControllerIntegrationTest {
     public void createPassportShouldReturn400IfPassportNull() throws Exception {
         String accountJSON = objectMapper.writeValueAsString(null);
 
-        when(accountService.save(Matchers.any(Account.class))).thenReturn(account);
+        when(accountService.save(any(Account.class))).thenReturn(account);
 
         mockMvc.perform(post("/accounts")
                 .contentType(MediaType.APPLICATION_JSON)

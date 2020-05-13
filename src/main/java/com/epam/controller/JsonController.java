@@ -30,9 +30,7 @@ public class JsonController {
     private ObjectMapper objectMapper;
 
     @Autowired
-    public JsonController(UserService userService,
-                          PassportService passportService,
-                          MappingJackson2HttpMessageConverter converter) {
+    public JsonController(UserService userService, PassportService passportService, MappingJackson2HttpMessageConverter converter) {
         this.userService = userService;
         this.passportService = passportService;
         this.objectMapper = converter.getObjectMapper();
@@ -40,7 +38,7 @@ public class JsonController {
 
     @GetMapping
     public String getTestPage() {
-        return "jsontest";
+        return "jsontest.html";
     }
 
     @GetMapping(path = "/serialize")

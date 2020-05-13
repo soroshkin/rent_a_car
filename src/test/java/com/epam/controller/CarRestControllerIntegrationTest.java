@@ -1,26 +1,18 @@
 package com.epam.controller;
 
-import com.epam.config.WebConfig;
-import com.epam.exception.RestResponseEntityExceptionHandler;
 import com.epam.model.Car;
 import com.epam.service.CarService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Matchers;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.ArgumentMatchers;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.time.LocalDate;
 import java.util.Arrays;
@@ -28,41 +20,28 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import static com.epam.config.Profiles.JPA_PROFILE;
 import static org.hamcrest.Matchers.is;
-import static org.mockito.Matchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@ActiveProfiles(JPA_PROFILE)
-@ContextConfiguration(classes = WebConfig.class)
-@WebAppConfiguration
-@ExtendWith(SpringExtension.class)
+@SpringBootTest
+@AutoConfigureMockMvc
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 public class CarRestControllerIntegrationTest {
+    @Autowired
     private ObjectMapper objectMapper;
     private Car car;
 
-    @Autowired
-    private MappingJackson2HttpMessageConverter converter;
-
-    @Mock
+    @MockBean
     private CarService carService;
 
-    @InjectMocks
-    private CarRestController carRestController;
-
+    @Autowired
     private MockMvc mockMvc;
 
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.initMocks(this);
-
-        mockMvc = MockMvcBuilders
-                .standaloneSetup(carRestController)
-                .setControllerAdvice(new RestResponseEntityExceptionHandler())
-                .build();
-        objectMapper = converter.getObjectMapper();
         car = new Car("Tatra", "W21", LocalDate.now(), 2000);
     }
 
@@ -114,7 +93,7 @@ public class CarRestControllerIntegrationTest {
         String carJSON = objectMapper.writeValueAsString(car);
 
         when(carService.existsById(anyLong())).thenReturn(true);
-        when(carService.save(Matchers.any(Car.class))).thenReturn(car);
+        when(carService.save(ArgumentMatchers.any(Car.class))).thenReturn(car);
 
         mockMvc.perform(put("/cars/1")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -129,7 +108,7 @@ public class CarRestControllerIntegrationTest {
     public void createCarShouldReturn200IfValid() throws Exception {
         String carJSON = objectMapper.writeValueAsString(car);
 
-        when(carService.save(Matchers.any(Car.class))).thenReturn(car);
+        when(carService.save(ArgumentMatchers.any(Car.class))).thenReturn(car);
 
         mockMvc.perform(post("/cars")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -144,7 +123,7 @@ public class CarRestControllerIntegrationTest {
     public void createCarShouldReturn400IfNotValid() throws Exception {
         String carJSON = objectMapper.writeValueAsString(null);
 
-        when(carService.save(Matchers.any(Car.class))).thenReturn(car);
+        when(carService.save(ArgumentMatchers.any(Car.class))).thenReturn(car);
 
         mockMvc.perform(post("/cars")
                 .contentType(MediaType.APPLICATION_JSON)

@@ -1,59 +1,43 @@
 package com.epam.controller;
 
-import com.epam.config.WebConfig;
-import com.epam.exception.RestResponseEntityExceptionHandler;
 import com.epam.model.User;
 import com.epam.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Optional;
 
-import static com.epam.config.Profiles.JPA_PROFILE;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
-import static org.mockito.Matchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@ActiveProfiles(JPA_PROFILE)
-@ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = WebConfig.class)
-@WebAppConfiguration
+@SpringBootTest
+@AutoConfigureMockMvc
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 public class UserRestControllerIntegrationTest {
+
+    @Autowired
     private MockMvc mockMvc;
 
-    @Mock
+    @MockBean
     private UserService userService;
 
-    @InjectMocks
-    private UserRestController userRestController;
-
-    @BeforeEach
-    void setUp() {
-        MockitoAnnotations.initMocks(this);
-        mockMvc = MockMvcBuilders
-                .standaloneSetup(userRestController)
-                .setControllerAdvice(new RestResponseEntityExceptionHandler())
-                .build();
-    }
+    @Mock
+    private User user;
 
     @Test
     public void getUsersShouldReturnGivenUsers() throws Exception {
@@ -76,9 +60,6 @@ public class UserRestControllerIntegrationTest {
                 .andExpect(jsonPath("$[1].email", is(emailSecondUser)))
                 .andReturn();
     }
-
-    @Mock
-    private User user;
 
     @Test
     public void getByIdShouldReturnOkStatus() throws Exception {

@@ -1,6 +1,5 @@
 package com.epam.repository.datajpa;
 
-import com.epam.config.WebConfig;
 import com.epam.model.Bill;
 import com.epam.model.Car;
 import com.epam.model.User;
@@ -10,16 +9,13 @@ import com.epam.repository.UserRepository;
 import com.epam.util.ModelUtilityClass;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlGroup;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.context.web.WebAppConfiguration;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -31,9 +27,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 @ActiveProfiles(SPRING_DATA_PROFILE)
-@ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = WebConfig.class)
-@WebAppConfiguration
+@SpringBootTest
 @SqlGroup(@Sql(executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD, scripts = "classpath:db/clearDB.sql"))
 public class DataJpaBillRepositoryTest {
     private Bill bill;

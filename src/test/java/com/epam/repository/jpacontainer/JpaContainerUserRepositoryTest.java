@@ -1,6 +1,5 @@
 package com.epam.repository.jpacontainer;
 
-import com.epam.config.WebConfig;
 import com.epam.model.Car;
 import com.epam.model.Passport;
 import com.epam.model.User;
@@ -8,15 +7,12 @@ import com.epam.repository.CarRepository;
 import com.epam.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlGroup;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
@@ -29,9 +25,7 @@ import static com.epam.util.ModelUtilityClass.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ActiveProfiles(JPA_PROFILE)
-@ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = WebConfig.class)
-@WebAppConfiguration
+@SpringBootTest
 @SqlGroup(@Sql(scripts = "classpath:db/clearDB.sql"))
 public class JpaContainerUserRepositoryTest {
     @Autowired

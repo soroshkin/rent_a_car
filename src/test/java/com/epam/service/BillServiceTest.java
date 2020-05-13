@@ -1,6 +1,5 @@
 package com.epam.service;
 
-import com.epam.config.WebConfig;
 import com.epam.model.Bill;
 import com.epam.model.Car;
 import com.epam.model.User;
@@ -10,28 +9,20 @@ import com.epam.repository.UserRepository;
 import javassist.NotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Comparator;
 import java.util.List;
 
-import static com.epam.config.Profiles.JPA_PROFILE;
 import static com.epam.util.ModelUtilityClass.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
-@ActiveProfiles(JPA_PROFILE)
-@ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = WebConfig.class)
+@SpringBootTest
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-@WebAppConfiguration
 public class BillServiceTest {
     private Bill bill;
 
@@ -70,7 +61,7 @@ public class BillServiceTest {
     @Transactional
     public void findAllByUserShouldReturnSortedList() throws NotFoundException {
         User user = userRepository.findById(1L)
-                .orElseThrow(()-> new NotFoundException("user not found"));
+                .orElseThrow(() -> new NotFoundException("user not found"));
         List<Bill> bills = billRepository.findAllByUser(user);
         assertThat(bills).isNotEmpty();
 
@@ -84,7 +75,7 @@ public class BillServiceTest {
     @Transactional
     public void findAllByCarShouldReturnSortedList() throws NotFoundException {
         Car car = carRepository.findById(1L)
-                .orElseThrow(()-> new NotFoundException("car not found"));
+                .orElseThrow(() -> new NotFoundException("car not found"));
         List<Bill> bills = billRepository.findAllByCar(car);
         assertThat(bills).isNotEmpty();
 
