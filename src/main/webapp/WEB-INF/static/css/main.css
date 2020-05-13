@@ -1,0 +1,140 @@
+.ffb-spinner {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.ffb-spinner-container {
+    position: absolute;
+    width: 100vw;
+    height: 100vh;
+    z-index: 3001;
+}
+
+.ffb-table-th {
+    width: 100px;
+    font-size: 1.2rem;
+    background-color: gray;
+    text-align: center;
+}
+
+.ffb-table-td {
+    width: 100px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.ffb-table-content {
+    display: flex;
+    flex-direction: column;
+}
+
+
+.ffb-table-content-record {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    margin-top: 5px;
+    width: 100%;
+    padding-bottom: 5px;
+    border-bottom: 1px solid black;
+}
+
+/*.ffb-cube-color-sample {*/
+/*    height: 1rem;*/
+/*    width: 1rem;*/
+/*    border: 1px solid black;*/
+/*    margin-right: 2px;*/
+/*}*/
+
+/*.full-screen-overlay {*/
+/*    position: absolute;*/
+/*    width: 100vw;*/
+/*    height: 100vh;*/
+/*    z-index: 3000;*/
+/*    background-color: rgba(100, 100, 100, 0.6);*/
+/*}*/
+
+.ffb-edit-record {
+    background-color: white;
+    box-shadow: 0 0 8px 3px rgba(0, 0, 0, 0.6);
+    width: 70%;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
+.ffb-edit-record-wrapper {
+    /*position: absolute;*/
+    /*margin-top: -10%;*/
+    /*width: 100%;*/
+    /*height: 100%;*/
+    z-index: 3002;
+    position: sticky;
+    position: -webkit-sticky;
+    top: 40%; /* required */
+}
+
+.ffb-edit-record-inner-wrapper {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+
+}
+
+/*.ffb-locations-dropdown-wrapper {*/
+/*    !*display: none;*!*/
+/*    position: absolute;*/
+/*    top: 2.5rem;*/
+/*    background-color: white;*/
+/*    z-index: 3003;*/
+/*    width: 200px;*/
+/*    border-radius: 4px;*/
+/*    box-shadow: 0 0 8px 3px rgba(0, 0, 0, 0.6);*/
+/*}*/
+
+/*.ffb-locations-dropdown {*/
+/*    display: flex;*/
+/*    flex-direction: column;*/
+/*    width: 100%;*/
+/*    height: 100%;*/
+/*}*/
+
+/*.ffb-dropdown-location {*/
+/*    user-select: none;*/
+/*    cursor: pointer;*/
+/*    width: 100%;*/
+/*    padding: 3px;*/
+/*    text-align: center;*/
+/*}*/
+
+/*.ffb-dropdown-location:hover {*/
+/*    background-color: #0f6674;*/
+/*    border-radius: 4px;*/
+/*}*/
+
+/*.ffb-edit-field-location {*/
+/*    width: 200px;*/
+/*}*/
+
+.ffb-edit-field-actions {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+}
+
+.display-none {
+    display: none;
+}
+
+/*.ffb-edit-record-location-name {*/
+/*    font-size: 32px;*/
+/*    font-weight: bold;*/
+/*    text-align: center;*/
+/*}*/
+
+

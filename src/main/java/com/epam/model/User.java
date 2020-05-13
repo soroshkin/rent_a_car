@@ -1,5 +1,7 @@
 package com.epam.model;
 
+import com.fasterxml.jackson.annotation.*;
+
 import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
@@ -7,23 +9,32 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Past;
 import java.time.LocalDate;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 @Entity
 @Table(name = "users")
 @NamedQuery(name = User.GET, query = "SELECT u FROM User u WHERE id=:id")
-@NamedQuery(name = User.DELETE, query = "DELETE FROM User u WHERE id=:id")
+@NamedQuery(name = User.GET_BY_EMAIL, query = "SELECT u FROM User u WHERE email=:email")
 @NamedQuery(name = User.GET_ALL, query = "SELECT u FROM User u")
+@NamedQuery(name = User.EXISTS, query = "SELECT 1 FROM User u WHERE u.id=:id")
+@NamedEntityGraph(name = User.GRAPH_USER_PASSPORTS, attributeNodes = @NamedAttributeNode("passports"))
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class,
+        property = "id",
+        scope = User.class)
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class User {
-    public static final String GET = "User.get";
-    public static final String GET_ALL = "User.getAll";
-    public static final String DELETE = "User.delete";
+    public static final String GET = "User.findById";
+    public static final String GET_BY_EMAIL = "User.findByEmail";
+    public static final String GET_ALL = "User.findAll";
+    public static final String EXISTS = "User.exists";
+    public static final String GRAPH_USER_PASSPORTS = "graph.User.passports";
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "email")
+    @Column(name = "email", unique = true)
     @Email
     @NotNull
     @NotBlank
@@ -32,22 +43,27 @@ public class User {
     @Column(name = "date_of_birth")
     @Past
     @NotNull
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate dateOfBirth;
 
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference(value = "user-account")
     private Account account;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<Passport> passports;
+    @JsonIgnore
+    private Set<Passport> passports = new HashSet<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<Bill> bills;
+    @JsonIgnore
+    private Set<Bill> bills = new HashSet<>();
 
-    @ManyToMany(cascade = CascadeType.ALL)
+    @ManyToMany
     @JoinTable(name = "trips",
             joinColumns = {@JoinColumn(name = "user_id")},
             inverseJoinColumns = @JoinColumn(name = "cars_id"))
-    private Set<Car> tripsByCar;
+    @JsonIgnore
+    private Set<Car> tripsByCar = new HashSet<>();
 
     protected User() {
     }
@@ -56,17 +72,22 @@ public class User {
         this.email = email;
         this.dateOfBirth = dateOfBirth;
         this.account = new Account(this);
-        this.bills = new HashSet<>();
-        this.passports = new HashSet<>();
-        this.tripsByCar = new HashSet<>();
     }
 
     public Long getId() {
         return id;
     }
 
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     public Account getAccount() {
         return account;
+    }
+
+    public void setAccount(Account account) {
+        this.account = account;
     }
 
     public Set<Bill> getBills() {
@@ -81,6 +102,10 @@ public class User {
         return email;
     }
 
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
     public LocalDate getDateOfBirth() {
         return dateOfBirth;
     }
@@ -91,6 +116,10 @@ public class User {
 
     public Set<Passport> getPassports() {
         return passports;
+    }
+
+    public void setPassports(Set<Passport> passports) {
+        this.passports = passports;
     }
 
     public boolean addPassport(Passport passport) {
@@ -119,8 +148,22 @@ public class User {
         return tripsByCar.remove(car);
     }
 
+    @JsonIgnore
     public boolean isNew() {
         return id == null;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        User user = (User) o;
+        return email.equals(user.email);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(email);
     }
 
     @Override
